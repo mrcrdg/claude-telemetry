@@ -9,6 +9,8 @@ The dashboard **leads with tokens**. Cost is shown too, but on a Claude
 subscription `claude_code.cost.usage` is *API-equivalent* pricing, **not your
 actual bill** — treat it as a relative signal, not a dollar figure.
 
+![Claude Code token usage dashboard in Grafana](imgs/grafana-dashboard-1.png)
+
 ```
 Claude Code ──OTLP gRPC :4317──▶ OTel Collector ──:8889──▶ Prometheus ──PromQL──▶ Grafana
 ```
