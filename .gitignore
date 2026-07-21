@@ -1,0 +1,8 @@
+# Local secrets / overrides
+.env
+*.local
+
+# Editor / OS cruft
+.DS_Store
+.idea/
+.vscode/

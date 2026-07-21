@@ -1,0 +1,18 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: claude-code-otel
+    static_configs:
+      - targets: ["otel-collector:8889"]
+    # Claude Code attaches identifying, high-cardinality attributes to every
+    # metric as data-point labels: user_email, user_id, account IDs, and the
+    # org ID. They're identical across all of one user's series (so they add no
+    # useful dimensionality) and include PII. Drop them before anything is
+    # stored. `session_id` is deliberately KEPT — it distinguishes each
+    # session's cumulative counters; dropping it would collide separate
+    # sessions into one series and break increase()/rate().
+    metric_relabel_configs:
+      - regex: "user_email|user_id|user_account_id|user_account_uuid|organization_id"
+        action: labeldrop

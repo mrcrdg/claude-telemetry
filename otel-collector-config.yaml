@@ -1,0 +1,44 @@
+# OpenTelemetry Collector config for Claude Code metrics.
+#
+# Receives OTLP over gRPC on :4317, and exposes the metrics for Prometheus
+# to scrape on :8889. Cumulative temporality is kept as-is — Prometheus
+# expects cumulative counters and handles resets in rate()/increase().
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+
+processors:
+  batch:
+    # Small local traffic — flush promptly so panels stay fresh.
+    timeout: 10s
+
+exporters:
+  prometheus:
+    endpoint: 0.0.0.0:8889
+    # Keep metric names predictable: no unit/`_total` suffix mangling, so
+    # `claude_code.token.usage` -> `claude_code_token_usage` (dots -> underscores).
+    add_metric_suffixes: false
+    # Left off: we don't need resource attributes promoted to labels. NOTE this
+    # is NOT what removes PII — Claude Code sends user_email, user_id, account
+    # IDs and session_id as DATA-POINT attributes, so they become labels no
+    # matter what this setting is. Those are stripped downstream in
+    # prometheus.yml via a `labeldrop` relabel rule. See that file.
+    resource_to_telemetry_conversion:
+      enabled: false
+
+  # Uncomment to eyeball raw metrics in `docker compose logs otel-collector`.
+  # debug:
+  #   verbosity: detailed
+
+service:
+  telemetry:
+    logs:
+      level: info
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [prometheus]
