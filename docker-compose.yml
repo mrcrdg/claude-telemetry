@@ -33,6 +33,10 @@ services:
       # head gets truncated and recent samples are lost. Only reachable from
       # localhost — the port is bound to 127.0.0.1 in `ports` below.
       - "--web.enable-lifecycle"
+      # Needed by the delete_series admin endpoint, which is how mislabelled
+      # series get corrected (project labels are baked into a series at write
+      # time, so a relabel means delete + re-import). Localhost-only, as above.
+      - "--web.enable-admin-api"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./prometheus/rules:/etc/prometheus/rules:ro

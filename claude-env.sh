@@ -51,10 +51,24 @@ export OTEL_METRIC_EXPORT_INTERVAL=10000
 # Name resolution, first match wins:
 #   1. the argument you passed    source claude-env.sh my-project
 #   2. $CLAUDE_TELEMETRY_PROJECT  CLAUDE_TELEMETRY_PROJECT=my-project source ...
-#   3. the current directory name
+#   3. the enclosing git repository (a worktree resolves to its main repo)
+#   4. the current directory name
+#
+# Step 3 matters: plain basename is wrong as soon as you launch Claude from a
+# subdirectory, turning <project>/docs into a project called "docs". For a
+# non-git project, pass the name explicitly as the argument.
 #
 # Values may not contain spaces or non-ASCII, so squash anything else to "_".
-_claude_project="${1:-${CLAUDE_TELEMETRY_PROJECT:-$(basename "$PWD")}}"
+_claude_project="${1:-$CLAUDE_TELEMETRY_PROJECT}"
+if [ -z "$_claude_project" ]; then
+  _claude_git="$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)"
+  if [ -n "$_claude_git" ]; then
+    _claude_project="$(basename "$(dirname "$_claude_git")")"
+  else
+    _claude_project="$(basename "$PWD")"
+  fi
+  unset _claude_git
+fi
 _claude_project="$(printf '%s' "$_claude_project" | tr -c 'A-Za-z0-9._-' '_')"
 export OTEL_RESOURCE_ATTRIBUTES="project=${_claude_project}"
 unset _claude_project

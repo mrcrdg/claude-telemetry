@@ -75,6 +75,58 @@ def sanitize(name):
     return "".join(c if (c.isalnum() or c in "._-") else "_" for c in name)
 
 
+def load_project_map(path):
+    """Optional {path-prefix: project-name} overrides, longest prefix wins.
+
+    Needed because no automatic rule covers every layout. A non-git project
+    with nested working directories (docs/, appendix/) has nothing on disk
+    marking where the project starts, so it has to be declared.
+    """
+    if not path or not os.path.exists(path):
+        return []
+    with open(path) as f:
+        m = json.load(f)
+    return sorted(((os.path.expanduser(k), v) for k, v in m.items()),
+                  key=lambda kv: -len(kv[0]))
+
+
+def project_for(cwd, overrides):
+    """Resolve a working directory to the project it belongs to.
+
+    basename(cwd) is wrong the moment you work in a subdirectory: it turns
+    <project>/appendix into a project called "appendix". Resolution order:
+
+      1. an explicit override prefix (see --project-map)
+      2. the enclosing git repository root -- and for a git *worktree*, the
+         main repository it belongs to, since `.git` there is a file pointing
+         elsewhere rather than a directory
+      3. basename(cwd), as a last resort
+    """
+    if not cwd:
+        return ""
+    cwd = os.path.normpath(cwd)
+    for prefix, name in overrides:
+        if cwd == prefix or cwd.startswith(prefix + os.sep):
+            return sanitize(name)
+    d = cwd
+    while d and d != os.sep:
+        dot = os.path.join(d, ".git")
+        if os.path.isdir(dot):
+            return sanitize(os.path.basename(d))
+        if os.path.isfile(dot):
+            # worktree: "gitdir: /path/to/main/.git/worktrees/<name>"
+            try:
+                target = open(dot).read().split("gitdir:", 1)[1].strip()
+            except (IndexError, OSError):
+                return sanitize(os.path.basename(d))
+            marker = os.sep + ".git" + os.sep + "worktrees" + os.sep
+            if marker in target:
+                return sanitize(os.path.basename(target.split(marker)[0]))
+            return sanitize(os.path.basename(d))
+        d = os.path.dirname(d)
+    return sanitize(os.path.basename(cwd))
+
+
 def existing_watermarks(prom_url):
     """Latest sample timestamp Prometheus already holds, per session.
 
@@ -111,7 +163,7 @@ def existing_watermarks(prom_url):
         return {}
 
 
-def collect(transcript_glob, cutoff_ts, watermarks):
+def collect(transcript_glob, cutoff_ts, watermarks, overrides):
     """-> samples[(metric, labels_tuple)] = [(ts, cumulative_value), ...]"""
     per_series = defaultdict(list)          # (session, project, model, type) -> [(ts, delta)]
     stats = defaultdict(int)
@@ -146,7 +198,7 @@ def collect(transcript_glob, cutoff_ts, watermarks):
             already = ts <= watermarks.get(sid, -1)
             if already:
                 stats["already_in_prometheus"] += 1
-            project = sanitize(os.path.basename(rec.get("cwd") or "")) or ""
+            project = project_for(rec.get("cwd"), overrides)
             for field, type_ in USAGE_FIELDS.items():
                 v = usage.get(field) or 0
                 if v:
@@ -193,6 +245,8 @@ def main():
     ap.add_argument("--cutoff-hours", type=float, default=3.0,
                     help="skip samples newer than this many hours (default 3)")
     ap.add_argument("-o", "--output", default="/tmp/claude-backfill.om")
+    ap.add_argument("--project-map", default="project-map.json",
+                    help="JSON {path-prefix: project} overriding auto-detection")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--no-dedupe", action="store_true",
                     help="ignore watermarks and re-emit everything (double-counts)")
@@ -204,7 +258,8 @@ def main():
               f" newer than each one's watermark will be written")
     cutoff = time.time() - args.cutoff_hours * 3600
 
-    per_series, stats = collect(args.transcripts, cutoff, marks)
+    per_series, stats = collect(args.transcripts, cutoff, marks,
+                                load_project_map(args.project_map))
     if not per_series:
         print("Nothing to backfill.")
         return 0
