@@ -127,6 +127,30 @@ def project_for(cwd, overrides):
     return sanitize(os.path.basename(cwd))
 
 
+def live_sessions(prom_url):
+    """Sessions already covered by LIVE telemetry, which must never be backfilled.
+
+    The two paths emit different label sets for the same logical data: live
+    rows carry `query_source`, backfilled rows carry `project`. Prometheus
+    keys a series by its full label set, so the two never merge — they sum,
+    and the session is counted twice.
+
+    Topping a live session up from transcripts is therefore unsound regardless
+    of timestamps. Live telemetry is authoritative and complete for the
+    sessions it covers; the backfill exists only for sessions that have none.
+    """
+    try:
+        q = 'count by (session_id) (claude_code_token_usage{query_source!=""})'
+        url = f"{prom_url}/api/v1/query_range?query={urllib.parse.quote(q)}"
+        end = int(time.time()); start = end - 30 * 86400
+        url += f"&start={start}&end={end}&step=300"
+        with urllib.request.urlopen(url, timeout=30) as r:
+            return {x["metric"]["session_id"] for x in json.load(r)["data"]["result"]}
+    except Exception as e:
+        print(f"  ! could not reach Prometheus ({e}); proceeding without it", file=sys.stderr)
+        return set()
+
+
 def existing_watermarks(prom_url):
     """Latest sample timestamp Prometheus already holds, per session.
 
@@ -163,7 +187,7 @@ def existing_watermarks(prom_url):
         return {}
 
 
-def collect(transcript_glob, cutoff_ts, watermarks, overrides):
+def collect(transcript_glob, cutoff_ts, watermarks, overrides, live):
     """-> samples[(metric, labels_tuple)] = [(ts, cumulative_value), ...]"""
     per_series = defaultdict(list)          # (session, project, model, type) -> [(ts, delta)]
     stats = defaultdict(int)
@@ -195,6 +219,9 @@ def collect(transcript_glob, cutoff_ts, watermarks, overrides):
                 continue
             # Kept for cumulative accounting even when already stored; the
             # emit step drops anything at or before the watermark.
+            if sid in live:
+                stats["skipped_live_session"] += 1
+                continue
             already = ts <= watermarks.get(sid, -1)
             if already:
                 stats["already_in_prometheus"] += 1
@@ -252,6 +279,9 @@ def main():
                     help="ignore watermarks and re-emit everything (double-counts)")
     args = ap.parse_args()
 
+    live = set() if args.no_dedupe else live_sessions(args.prometheus)
+    if live:
+        print(f"  {len(live)} session(s) already covered by live telemetry — skipped entirely")
     marks = {} if args.no_dedupe else existing_watermarks(args.prometheus)
     if marks:
         print(f"  {len(marks)} session(s) already partly stored; only samples"
@@ -259,7 +289,7 @@ def main():
     cutoff = time.time() - args.cutoff_hours * 3600
 
     per_series, stats = collect(args.transcripts, cutoff, marks,
-                                load_project_map(args.project_map))
+                                load_project_map(args.project_map), live)
     if not per_series:
         print("Nothing to backfill.")
         return 0
@@ -275,7 +305,7 @@ def main():
     print(f"\n  messages scanned            {stats['messages']:>10,}")
     print(f"  samples to write            {stats['samples']:>10,}")
     print(f"  sessions recovered          {len(sessions):>10,}")
-    for k in ("already_in_prometheus", "skipped_too_recent",
+    for k in ("skipped_live_session", "already_in_prometheus", "skipped_too_recent",
               "skipped_no_model_or_session"):
         if stats.get(k):
             print(f"  {k:<27} {stats[k]:>10,}")

@@ -88,6 +88,20 @@ Match the panel to the goal, rather than reading everything:
 | **Work faster** | *Tool execution time*, *Tool failure rate*, *API request latency*. |
 | **Sanity-check habits** | *Per-session efficiency*, *Cache amortization*. |
 
+### "All" is not the same as ticking every item
+
+They produce different queries, and the difference is load-bearing:
+
+| selection | Grafana sends | matches a series with **no** such label? |
+| --- | --- | --- |
+| **All** (with `allValue: ".*"`) | `query_source=~".*"` | **yes** |
+| every item ticked individually | `query_source=~"(main\|auxiliary)"` | **no** |
+
+A regex listing concrete values cannot match a label that is absent. Sessions
+recovered from transcripts carry no `query_source` at all, so ticking every
+item hides them while **All** shows them. If a filter change makes rows vanish,
+this is usually why — reset to All.
+
 Two metrics are **not** worth watching here: *Cache hit rate (SigNoz)* sits
 near 100% and cannot move, and *Uncached input* is 0.1% of cost.
 

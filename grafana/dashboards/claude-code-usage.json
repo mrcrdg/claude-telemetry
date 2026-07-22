@@ -263,7 +263,7 @@
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "editorMode": "code",
-          "expr": "sum(increase(claude_code_active_time_total{project=~\"$project\"}[$__range]))",
+          "expr": "sum(max_over_time(claude_code_active_time_total{project=~\"$project\"}[$__range]))",
           "instant": true,
           "legendFormat": "active time",
           "range": false,
