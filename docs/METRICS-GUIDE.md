@@ -313,42 +313,7 @@ makes the runway last longer, and that's the loop worth closing.
 
 ## 7. How this setup compares to the SigNoz reference
 
-[SigNoz's Claude Code monitoring guide](https://signoz.io/blog/claude-code-monitoring-with-opentelemetry/)
-is the most complete public write-up. Checking this stack against it:
-
-### Where we match
-
-Both collect the same eight metrics (`session.count`, `lines_of_code.count`,
-`pull_request.count`, `commit.count`, `cost.usage`, `token.usage`,
-`code_edit_tool.decision`, `active_time.total`) and both set
-`OTEL_METRIC_EXPORT_INTERVAL=10000`. Their org-wide `managed-settings.json`
-is the same mechanism as the `env` block in `~/.claude/settings.json` here,
-one scope up.
-
-### Where we deliberately differ
-
-| | SigNoz guide | here | why |
-| --- | --- | --- | --- |
-| Metric names | `claude_code.token.usage` (dotted, and `_total`/unit suffixes once through a Prometheus exporter) | `claude_code_token_usage` | `add_metric_suffixes: false` keeps names predictable. **Their PromQL won't run here unmodified** — see §5 of FUTURE-IMPROVEMENTS. |
-| Per-user attribution | "requests per user" table | dropped at scrape | `user.email`, `user.id` and account IDs are PII and identical across a single-user setup, so they add cardinality and no signal. |
-| Prompt logging | mentions `OTEL_LOG_USER_PROMPTS=1` | off, documented as a warning | It ships prompt text to the log store. |
-| Cost | `cost.usage` as-is | re-priced per token type | The built-in metric has no `type` label, so it cannot separate cache writes from reads — the thing that actually drives spend. |
-
-The guide gives no cardinality or PII controls at all, so the `labeldrop` rule
-here is stricter than the reference.
-
-### What we took from it
-
-- **The rolling 5-hour window.** Claude's session limit resets on a 5-hour
-  cycle, so tokens-per-5h is the closest honest proxy for "am I burning the
-  window fast?" It is *not* a quota percentage — that number is only in
-  `/usage` — but the shape is real and it needs no data we lack.
-- **Cache hit rate** (`cacheRead / (input + cacheRead)`), §3.4, for
-  cross-team comparability.
-
-### What we can't take
-
-P95 command duration, request success rate, and tool-type usage all need the
-**events** pipeline, which needs a log store (§3). Their edit accept/reject
-panel is buildable — `claude_code_code_edit_tool_decision` has data here — and
-is the best remaining candidate.
+Moved to its own document — see
+**[SIGNOZ-COMPARISON.md](SIGNOZ-COMPARISON.md)** for what both stacks have,
+what only this one has, and what only theirs has (with the reason each gap
+exists).

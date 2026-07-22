@@ -88,7 +88,9 @@ so you can see which working styles were efficient.
 Panel descriptions (hover the ⓘ) carry each metric's target range and what to
 do when it drifts. The full writeup — price table, ratio derivations, threshold
 provenance — is linked from the dashboard header and lives in
-**[docs/METRICS-GUIDE.md](docs/METRICS-GUIDE.md)**.
+**[docs/METRICS-GUIDE.md](docs/METRICS-GUIDE.md)**, and
+**[docs/SIGNOZ-COMPARISON.md](docs/SIGNOZ-COMPARISON.md)** compares this stack
+against the SigNoz reference setup.
 
 **Tokens**
 - *Tokens over time by type* — stacked series for `input`, `output`,
