@@ -248,6 +248,178 @@
     {
       "collapsed": false,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "id": 104,
+      "panels": [],
+      "title": "Cost & efficiency",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "description": "Share of spend going to writing the prompt cache. Cache writes cost 1.25x input; cache reads cost 0.1x — a 12.5x spread, so writes dominate the bill even at a small share of tokens. High values usually mean many short sessions each paying to rebuild the cache; continuing a session (claude --continue) amortizes the write across more reads.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 30 },
+              { "color": "red", "value": 50 }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 7, "w": 6, "x": 0, "y": 6 },
+      "id": 13,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "editorMode": "code",
+          "expr": "sum(max_over_time(claude_code_token_cost_usd{type=\"cacheCreation\", project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range])) / sum(max_over_time(claude_code_token_cost_usd{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range])) * 100",
+          "instant": true,
+          "legendFormat": "cache write share",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Cache write share of cost",
+      "type": "gauge"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "description": "Where the money actually goes, priced per token type. The built-in claude_code_cost_usage metric has no `type` label, so this uses the claude_code_token_cost_usd recording rule (see prometheus/rules/claude-cost.yml). Token share and cost share differ wildly — cacheRead is usually most of the tokens and a minority of the cost.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "decimals": 4,
+          "mappings": [],
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 7, "w": 10, "x": 6, "y": 6 },
+      "id": 14,
+      "options": {
+        "displayMode": "gradient",
+        "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": false },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "editorMode": "code",
+          "expr": "sum by (type) (max_over_time(claude_code_token_cost_usd{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
+          "instant": true,
+          "legendFormat": "{{type}}",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Cost by token type",
+      "type": "bargauge"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "description": "Total cost divided by the number of distinct sessions. Watch this against session count: if fewer, longer sessions lower it, cache writes were the reason.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "fixed", "fixedColor": "text" },
+          "decimals": 4,
+          "mappings": [],
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 7, "w": 4, "x": 16, "y": 6 },
+      "id": 15,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "editorMode": "code",
+          "expr": "sum(max_over_time(claude_code_token_cost_usd{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range])) / count(count by (session_id) (max_over_time(claude_code_token_cost_usd{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range])))",
+          "instant": true,
+          "legendFormat": "cost/session",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Cost per session",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "description": "Distinct session_id values that produced tokens in the range. Counting distinct IDs (rather than increase() on the session counter) stays correct for sessions short enough to fit in a single export interval.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "fixed", "fixedColor": "text" },
+          "mappings": [],
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 7, "w": 4, "x": 20, "y": 6 },
+      "id": 16,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "editorMode": "code",
+          "expr": "count(count by (session_id) (max_over_time(claude_code_token_cost_usd{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range])))",
+          "instant": true,
+          "legendFormat": "sessions",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Sessions (distinct)",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 13 },
       "id": 101,
       "panels": [],
       "title": "Tokens",
@@ -285,7 +457,7 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 9, "w": 16, "x": 0, "y": 6 },
+      "gridPos": { "h": 9, "w": 16, "x": 0, "y": 14 },
       "id": 5,
       "options": {
         "legend": { "calcs": ["sum"], "displayMode": "table", "placement": "right", "showLegend": true },
@@ -316,7 +488,7 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 9, "w": 8, "x": 16, "y": 6 },
+      "gridPos": { "h": 9, "w": 8, "x": 16, "y": 14 },
       "id": 6,
       "options": {
         "displayLabels": ["percent"],
@@ -342,7 +514,7 @@
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 15 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 23 },
       "id": 102,
       "panels": [],
       "title": "Cost & activity (secondary)",
@@ -380,7 +552,7 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 16 },
+      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 24 },
       "id": 7,
       "options": {
         "legend": { "calcs": ["sum"], "displayMode": "table", "placement": "right", "showLegend": true },
@@ -411,7 +583,7 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 16 },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 24 },
       "id": 8,
       "options": {
         "displayLabels": ["percent"],
@@ -459,7 +631,7 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 24 },
+      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 32 },
       "id": 9,
       "options": {
         "barRadius": 0,
@@ -515,7 +687,7 @@
           }
         ]
       },
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 24 },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 32 },
       "id": 10,
       "options": {
         "cellHeight": "sm",
@@ -551,7 +723,7 @@
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 32 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 40 },
       "id": 103,
       "panels": [],
       "title": "By project",
@@ -589,7 +761,7 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 33 },
+      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 41 },
       "id": 11,
       "options": {
         "legend": { "calcs": ["sum"], "displayMode": "table", "placement": "right", "showLegend": true },
@@ -624,7 +796,7 @@
           }
         ]
       },
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 33 },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 41 },
       "id": 12,
       "options": {
         "cellHeight": "sm",

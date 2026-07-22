@@ -1,7 +1,7 @@
 # Future improvements
 
-Ideas for extending this stack, roughly in order of value-for-effort. Nothing
-here is implemented yet.
+Ideas for extending this stack, roughly in order of value-for-effort. The
+cost-breakdown items in §5 have shipped; everything else here is still open.
 
 Contents:
 1. [Gaps in what we already collect](#1-gaps-in-what-we-already-collect)
@@ -150,9 +150,9 @@ becomes annoying:
 
 ### Retention
 
-Prometheus runs with defaults (15 days). For cost trends over months, set
-`--storage.tsdb.retention.time` in `docker-compose.yml`, and consider recording
-rules to pre-aggregate daily cost per project so long-range queries stay cheap.
+Retention is already set to 90d in `docker-compose.yml`. For trends beyond that,
+raise `--storage.tsdb.retention.time` and consider recording rules that
+pre-aggregate daily cost per project so long-range queries stay cheap.
 
 ### Alerting
 
@@ -213,9 +213,23 @@ So this is a source of *ideas*, not a file to import.
 
 ### Suggested order of work
 
-1. Cache efficiency gauge + cost per 1K output (small, high value).
-2. Distinct-session count to replace the current Sessions tile.
-3. Active time split by `type`.
-4. Edit acceptance rate + lines of code, using `increase()` — not `sum_over_time`.
-5. Agent / skill / MCP attribution panels.
-6. Loki + events pipeline, for latency and tool-failure visibility.
+**Shipped** (see the "Cost & efficiency" dashboard row):
+
+- ~~Cache efficiency gauge~~ — shipped as *cache write share of cost*, which
+  measures the write/read split rather than the community dashboard's
+  `cacheRead/(cacheRead+input)`. Writes are the expensive half, so that's the
+  number worth watching.
+- ~~Cost split by token type~~ — via the `claude_code_token_cost_usd` recording
+  rule, since the built-in cost metric carries no `type` label.
+- ~~Distinct-session count and cost per session~~.
+
+**Still open, in priority order:**
+
+1. Agent / skill / MCP attribution — the only way to see *which activity* costs
+   money. Highest remaining value.
+2. Cost per 1K output tokens — unit economics comparable across time.
+3. Active time split by `type` (user vs cli).
+4. Edit acceptance rate + lines of code, using `increase()` — not
+   `sum_over_time`. Quality signal rather than a cost signal.
+5. Loki + events pipeline, for latency and tool-failure visibility. Biggest
+   build, least direct cost insight.

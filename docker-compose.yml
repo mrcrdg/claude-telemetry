@@ -27,8 +27,15 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
       - "--storage.tsdb.retention.time=90d"
+      # Lets `curl -X POST localhost:9090/-/reload` apply rule/config edits
+      # without restarting. Worth having: a restart re-reads the TSDB head, and
+      # if stray blocks overlap it (e.g. left over from a rule backfill) the
+      # head gets truncated and recent samples are lost. Only reachable from
+      # localhost — the port is bound to 127.0.0.1 in `ports` below.
+      - "--web.enable-lifecycle"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/rules:/etc/prometheus/rules:ro
       - prometheus-data:/prometheus
     ports:
       - "127.0.0.1:9090:9090"

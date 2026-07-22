@@ -61,6 +61,14 @@ Claude Code ──OTLP gRPC :4317──▶ OTel Collector ──:8889──▶ P
 
 **Overview** — total tokens, cost, sessions, active time (stat tiles).
 
+**Cost & efficiency**
+- *Cache write share of cost* — gauge. Cache writes cost 1.25× input, cache
+  reads 0.1× — a 12.5× spread, so writes dominate the bill even at a small
+  share of tokens. This is usually the biggest lever available.
+- *Cost by token type* — where the money actually goes, priced per type.
+- *Cost per session* and *Sessions (distinct)* — unit economics. Both count
+  distinct `session_id`s so the ratio is always internally consistent.
+
 **Tokens** (lead)
 - *Tokens over time by type* — stacked series for `input`, `output`,
   `cacheRead`, `cacheCreation`.
@@ -95,6 +103,7 @@ false` so there's no `_total`/unit suffix mangling):
 | `claude_code_lines_of_code_count` | count | `type` = added \| removed                       |
 | `claude_code_commit_count`     | count   | —                                               |
 | `claude_code_pull_request_count` | count | —                                               |
+| `claude_code_token_cost_usd`   | USD     | **recording rule**, not from Claude Code — `claude_code_token_usage` priced per token type. Same labels as the source metric. |
 
 - `query_source` (always present): `main` (your direct prompts), `subagent`
   (spawned agents), `auxiliary` (internal/background calls).
@@ -112,6 +121,25 @@ false` so there's no `_total`/unit suffix mangling):
 
   Only data captured *after* tagging carries the label; older series keep an
   empty `project`, and the dashboard's "All" selection still includes them.
+- **`claude_code_cost_usage` has no `type` label**, so it can't answer "how much
+  am I paying for cache writes vs reads". That's why
+  `prometheus/rules/claude-cost.yml` re-prices the token counter per type. Both
+  are API-equivalent pricing — on a subscription, neither is your bill.
+- **Recording rules are forward-only.** They price whatever is being scraped at
+  evaluation time, so history recorded before a rule existed gets no cost
+  series. Backfill it with `promtool tsdb create-blocks-from rules`:
+
+  ```bash
+  docker exec claude-prometheus promtool tsdb create-blocks-from rules \
+    --start=<RFC3339> --end=<RFC3339> --url=http://localhost:9090 \
+    --output-dir=/prometheus/backfill /etc/prometheus/rules/claude-cost.yml
+  # then stop Prometheus, move the blocks into /prometheus, and start it again
+  ```
+
+  ⚠️ **Set `--end` to at least a few hours in the past, never `now`.** Blocks
+  that overlap Prometheus's in-memory head cause it to be truncated on restart,
+  destroying recent samples that hadn't been flushed to disk yet. Backfilling to
+  `now` will silently lose the last hours of raw metrics.
 - **No latency metric exists.** Per-request duration (the "15s" the CLI shows
   while working) lives in the `claude_code.api_request` *event*, not in any
   metric — and events need a log store, which this stack doesn't run.

@@ -1,0 +1,65 @@
+# Turns token counters into a USD cost counter, so panels don't have to repeat
+# pricing arithmetic. All original labels (project, session_id, model, type) are
+# preserved, so the cost metric filters exactly like the token metric.
+#
+# It's a single rule with `or`-chained terms rather than one rule per
+# model/type: the selectors are mutually exclusive, so `or` unions them into one
+# series set. Splitting it into twelve rules recording the same metric name also
+# works, but `promtool check rules` rejects that as a duplicate-rule lint error.
+#
+# Why this exists: `claude_code_cost_usage` gives a single cost number with no
+# `type` label, so it can't answer "how much am I paying for cache writes vs
+# cache reads". Splitting cost by token type is the whole point.
+#
+# Rates are USD per token (published per-MTok price / 1e6):
+#
+#   | model       | input | output | cacheCreation (1.25x in) | cacheRead (0.1x in) |
+#   | ----------- | ----- | ------ | ------------------------ | ------------------- |
+#   | Opus 4.8    | $5    | $25    | $6.25                    | $0.50               |
+#   | Sonnet 5    | $3    | $15    | $3.75                    | $0.30               |
+#   | Haiku 4.5   | $1    | $5     | $1.25                    | $0.10               |
+#
+# Cache multipliers are the 5-minute-TTL rates. Claude Code doesn't expose which
+# TTL it used; a 1h-TTL write is 2x input, not 1.25x, so cacheCreation cost is a
+# floor rather than an exact figure.
+#
+# NOTE: this is API-equivalent pricing. On a subscription it is NOT your bill —
+# use it to compare sessions/projects, not to predict a charge.
+#
+# Adding a model: copy a block and set the four rates. A model matching no rule
+# produces no cost series (it silently vanishes from cost panels rather than
+# being priced wrong) — check `count by (model) (claude_code_token_usage)`
+# against `count by (model) (claude_code_token_cost_usd)` if a model looks absent.
+
+groups:
+  - name: claude_code_cost
+    interval: 30s
+    rules:
+      - record: claude_code_token_cost_usd
+        expr: |
+          # Opus 4.8 / 4.7 / 4.6 — $5 in / $25 out
+            claude_code_token_usage{model=~"claude-opus.*",   type="input"}         * 5e-6
+          or
+            claude_code_token_usage{model=~"claude-opus.*",   type="output"}        * 25e-6
+          or
+            claude_code_token_usage{model=~"claude-opus.*",   type="cacheCreation"} * 6.25e-6
+          or
+            claude_code_token_usage{model=~"claude-opus.*",   type="cacheRead"}     * 0.5e-6
+          or
+          # Sonnet 5 / 4.6 — $3 in / $15 out
+            claude_code_token_usage{model=~"claude-sonnet.*", type="input"}         * 3e-6
+          or
+            claude_code_token_usage{model=~"claude-sonnet.*", type="output"}        * 15e-6
+          or
+            claude_code_token_usage{model=~"claude-sonnet.*", type="cacheCreation"} * 3.75e-6
+          or
+            claude_code_token_usage{model=~"claude-sonnet.*", type="cacheRead"}     * 0.3e-6
+          or
+          # Haiku 4.5 — $1 in / $5 out
+            claude_code_token_usage{model=~"claude-haiku.*",  type="input"}         * 1e-6
+          or
+            claude_code_token_usage{model=~"claude-haiku.*",  type="output"}        * 5e-6
+          or
+            claude_code_token_usage{model=~"claude-haiku.*",  type="cacheCreation"} * 1.25e-6
+          or
+            claude_code_token_usage{model=~"claude-haiku.*",  type="cacheRead"}     * 0.1e-6
