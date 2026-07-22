@@ -87,6 +87,10 @@ def main():
     d = json.load(open(args.dashboard))
     changed = []
     for p in d["panels"]:
+        # Row headers share a title with the panel beneath them and carry no
+        # fieldConfig, so match on type as well.
+        if p.get("type") == "row" or "fieldConfig" not in p:
+            continue
         if p.get("title") == "Cache amortization":
             p["fieldConfig"]["defaults"]["thresholds"]["steps"] = [
                 {"color": "red", "value": None},

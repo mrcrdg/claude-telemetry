@@ -91,6 +91,113 @@ If I compress the whole experience into advice:
 
 The result is a tool I genuinely use, built faster than I could have alone, and correct in ways I *verified* rather than assumed. That combination — the leverage of the agent plus the judgment to direct and audit it — is, I think, the actual skill worth developing right now. Not "AI writes my code." More like: I know how to run a good collaboration where one of the collaborators happens to be a machine that's brilliant, fast, and occasionally, confidently wrong.
 
+## The sequel: what happened when I actually used it
+
+The post above ends where most build-logs end — the thing works, ship it. But I
+kept using it, and kept extending it with the same agent. That second phase
+taught me more than the first, because now there was *data* to be wrong about.
+
+### It priced my cache 37% too low for days
+
+The dashboard's headline finding was that most of my spend goes on the prompt
+cache. Cache writes cost more than normal input tokens, and the agent priced
+them at **1.25×** — a number it had, plausibly, from the docs.
+
+There are two rates. 1.25× applies to a 5-minute cache lifetime, 2× to a
+1-hour one. Claude Code uses the 1-hour one, exclusively. We only found out
+because I asked an unrelated question about recovering old sessions, which sent
+the agent digging into local transcript files, where it found this:
+
+```json
+"cache_creation": {"ephemeral_1h_input_tokens": 5973, "ephemeral_5m_input_tokens": 0}
+```
+
+All 4,196,742 cache-creation tokens across 1,262 messages: the 1-hour rate.
+Every cost number on the dashboard had been understated, and every conclusion
+drawn from it was skewed. Nothing had errored. The dashboard had looked
+confident and healthy the entire time.
+
+Lesson three: **plausible-looking numbers are the most dangerous kind of
+wrong.** A crash is a gift; a quietly incorrect figure is a liability that
+compounds.
+
+### It gave me the wrong advice, from its own correct data
+
+Worse, and more interesting. Once cache costs were visible, the agent wrote me
+a guide whose top recommendation was *fewer, longer sessions* — reuse the cache
+rather than rebuilding it. Sensible. Also wrong.
+
+When I later asked it to rank optimizations by measured impact, it worked out
+that cache **writes** are 19.6% of my spend while cache **reads** are 61.2% —
+and reads scale with context size, which grows about 4.8× over the course of a
+session. Longer sessions trade a cheap write for progressively expensive reads.
+Its own dashboard contained the numbers that contradicted its advice; nobody
+had asked the question that put them together.
+
+To its credit, it opened the corrected playbook with an explicit retraction of
+its earlier guidance. But the retraction only happened because I asked "what
+should I actually *do* about these metrics?" — a question about action, not
+about data. That question was mine to ask.
+
+### The bugs I caught by knowing my own life
+
+Some failures were invisible to the agent because they weren't technical.
+
+It labelled each project by the folder name of wherever I'd launched Claude.
+Reasonable-looking, and it silently split my thesis into three separate
+"projects" — the thesis, a subfolder, and an appendix — while attributing a git
+worktree to an unrelated repo. The dashboard was internally consistent and
+completely wrong about my life. No test catches that. I caught it because I
+know which folders are one project.
+
+Then, twice, its data-recovery routine destroyed data. It writes historical
+blocks directly into Prometheus's storage, and blocks that overlap the
+in-memory buffer cause that buffer to be discarded on restart. Both times its
+own verification step caught it and reported the loss honestly, unprompted. The
+second time it recommended *against* rolling back, because the recovered data
+was worth more than what was lost — and showed me the numbers behind that call.
+I'd rather have an agent that breaks something and tells me than one that
+breaks something quietly.
+
+And once, it walked directly into a trap it had documented itself. It had
+written a warning that the privacy rule protecting my metrics doesn't cover
+event logs. Two weeks later it enabled event logging — and my email address
+went straight into the log store. It caught it during verification, scrubbed
+it, wiped the store, and confirmed clean. Writing a warning down is not the
+same as heeding it, for people or for models.
+
+### The thing it can't do: know when to stop measuring
+
+The last correction was mine. It had hardcoded my performance baseline into the
+dashboard — "from 14 sessions: p25 9×, median 15×" — as fixed thresholds for
+what counted as good. But a baseline computed from your own history is stale
+the moment you work again. By the time I noticed, I had 20 sessions and the
+median had already moved from 14.6× to 12.0×.
+
+The fix was to make the thresholds a script that refits from live data. But the
+*insight* — that a number describing you can't be frozen — came from noticing
+something felt hardcoded. That's not a technical observation. It's knowing the
+difference between a constant and a measurement.
+
+### What the second phase changed about my advice
+
+The first four lessons still hold. Two more:
+
+5. **Ask "what should I do?", not just "what does this show?"** The agent will
+   describe data accurately and still recommend the wrong action, because
+   ranking by impact is a different question from reporting correctly.
+6. **Verify against an independent source, not against itself.** The check that
+   caught the most bugs compares the agent's computed costs against the cost
+   figure Claude Code reports on its own. Two paths to the same number, and
+   they must agree. That single assertion found three separate bugs, two of
+   which had been live for days while everything looked fine.
+
+The honest summary of the whole project: the agent wrote nearly all of the
+code, caught things I never would have, and was confidently wrong about the
+most consequential number in the system for over a week. Both of those are
+true, and neither cancels the other. What made it work wasn't trusting it or
+distrusting it — it was building the checks that made trust unnecessary.
+
 ## Try it
 
 ```bash

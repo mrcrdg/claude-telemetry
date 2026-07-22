@@ -3,7 +3,10 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -44,12 +47,23 @@
   "liveNow": false,
   "refresh": "30s",
   "schemaVersion": 39,
-  "tags": ["claude-code", "tokens", "usage"],
+  "tags": [
+    "claude-code",
+    "tokens",
+    "usage"
+  ],
   "templating": {
     "list": [
       {
-        "current": { "selected": false, "text": "All", "value": "$__all" },
-        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
         "definition": "label_values(claude_code_token_cost_usd, project)",
         "includeAll": true,
         "label": "Project",
@@ -68,8 +82,15 @@
         "allValue": ".*"
       },
       {
-        "current": { "selected": false, "text": "All", "value": "$__all" },
-        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
         "definition": "label_values(claude_code_token_cost_usd, model)",
         "includeAll": true,
         "label": "Model",
@@ -88,8 +109,15 @@
         "allValue": ".*"
       },
       {
-        "current": { "selected": false, "text": "All", "value": "$__all" },
-        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
         "definition": "label_values(claude_code_token_cost_usd, query_source)",
         "includeAll": true,
         "label": "Query source",
@@ -109,48 +137,76 @@
       }
     ]
   },
-  "time": { "from": "now-7d", "to": "now" },
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Claude Code — Token Usage",
+  "title": "Claude Code \u2014 Token Usage",
   "uid": "claude-code-usage",
-  "version": 11,
+  "version": 12,
   "weekStart": "",
   "panels": [
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
       "id": 100,
       "panels": [],
       "title": "Overview",
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "Total tokens of every type whose session was active in the selected range. Uses max_over_time rather than increase() so sessions that finished before the window still count — increase() reports 0 for those.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Total tokens of every type whose session was active in the selected range. Uses max_over_time rather than increase() so sessions that finished before the window still count \u2014 increase() reports 0 for those.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "fixed", "fixedColor": "blue" },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
           "mappings": [],
           "unit": "short"
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 1 },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 1
+      },
       "id": 1,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": { "calcs": ["sum"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
         "textMode": "auto",
         "wideLayout": true
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "sum(max_over_time(claude_code_token_usage{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
           "instant": true,
@@ -163,31 +219,51 @@
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "API-equivalent cost. On a subscription this is NOT your bill — it is what the same work would cost on pay-as-you-go, useful for comparing projects and sessions, not for predicting a charge.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "API-equivalent cost. On a subscription this is NOT your bill \u2014 it is what the same work would cost on pay-as-you-go, useful for comparing projects and sessions, not for predicting a charge.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "fixed", "fixedColor": "green" },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "green"
+          },
           "mappings": [],
           "unit": "currencyUSD"
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 1 },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 1
+      },
       "id": 2,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": { "calcs": ["sum"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
         "textMode": "auto",
         "wideLayout": true
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "sum(max_over_time(claude_code_token_cost_usd{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
           "instant": true,
@@ -200,31 +276,51 @@
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "description": "Distinct sessions in range, counted from token data so recovered sessions are included. The claude_code_session_count metric is not used here: it only exists for sessions that ran with telemetry enabled, and cannot be reconstructed from transcripts.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "fixed", "fixedColor": "purple" },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "purple"
+          },
           "mappings": [],
           "unit": "short"
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 1
+      },
       "id": 3,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": { "calcs": ["sum"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
         "textMode": "auto",
         "wideLayout": true
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "count(count by (session_id) (max_over_time(claude_code_token_cost_usd{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range])))",
           "instant": true,
@@ -237,31 +333,51 @@
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "Active coding time — LIVE SESSIONS ONLY. Transcripts carry no timing data, so sessions recovered by the backfill script contribute nothing here. Reads 0 if no telemetry-enabled session ran in the window.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Active coding time \u2014 LIVE SESSIONS ONLY. Transcripts carry no timing data, so sessions recovered by the backfill script contribute nothing here. Reads 0 if no telemetry-enabled session ran in the window.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "fixed", "fixedColor": "orange" },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "orange"
+          },
           "mappings": [],
           "unit": "s"
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 1
+      },
       "id": 4,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": { "calcs": ["sum"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
         "textMode": "auto",
         "wideLayout": true
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "sum(max_over_time(claude_code_active_time_total{project=~\"$project\"}[$__range]))",
           "instant": true,
@@ -275,48 +391,84 @@
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 5
+      },
       "id": 104,
       "panels": [],
-      "title": "Efficiency scorecard  ·  where the money goes",
+      "title": "Efficiency scorecard  \u00b7  where the money goes",
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "cacheRead / cacheCreation — how many times you reused what you paid to cache. THE headline efficiency number. Red below 2x is arithmetic: cache writes cost 2x input at the 1h TTL Claude Code uses, so below ~2.1 reuses caching costs more than sending fresh. The yellow/green bands are YOUR baseline, not an industry norm — fitted to the percentiles of your own sessions, so they move as you work. Re-fit them with scripts/recalibrate-thresholds.py. Raise it with `claude --continue` instead of a fresh session.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "cacheRead / cacheCreation \u2014 how many times you reused what you paid to cache. THE headline efficiency number. Red below 2x is arithmetic: cache writes cost 2x input at the 1h TTL Claude Code uses, so below ~2.1 reuses caching costs more than sending fresh. The yellow/green bands are YOUR baseline, not an industry norm \u2014 fitted to the percentiles of your own sessions, so they move as you work. Re-fit them with scripts/recalibrate-thresholds.py. Raise it with `claude --continue` instead of a fresh session.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "decimals": 1,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "orange", "value": 2 },
-              { "color": "yellow", "value": 9 },
-              { "color": "green", "value": 15 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 2
+              },
+              {
+                "color": "yellow",
+                "value": 5
+              },
+              {
+                "color": "green",
+                "value": 12
+              }
             ]
           },
           "unit": "none"
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 6 },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 6
+      },
       "id": 17,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "textMode": "auto",
         "wideLayout": true
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "sum(max_over_time(claude_code_token_usage{type=\"cacheRead\", project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range])) / sum(max_over_time(claude_code_token_usage{type=\"cacheCreation\", project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
           "instant": true,
@@ -329,40 +481,68 @@
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "Share of spend going to WRITING the cache. Cache writes cost 2x input (1h TTL), reads 0.1x — a 20x spread — so writes dominate the bill even at a small share of tokens. Do NOT try to drive this to zero: writes are the cost of admission, and no writes means no cheap reads. Under ~30% is healthy; over 50% means sessions are dying before they amortize.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Share of spend going to WRITING the cache. Cache writes cost 2x input (1h TTL), reads 0.1x \u2014 a 20x spread \u2014 so writes dominate the bill even at a small share of tokens. Do NOT try to drive this to zero: writes are the cost of admission, and no writes means no cheap reads. Under ~30% is healthy; over 50% means sessions are dying before they amortize.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "decimals": 1,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 30 },
-              { "color": "red", "value": 50 }
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 30
+              },
+              {
+                "color": "red",
+                "value": 50
+              }
             ]
           },
           "unit": "percent"
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 6 },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 6
+      },
       "id": 13,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "textMode": "auto",
         "wideLayout": true
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "sum(max_over_time(claude_code_token_cost_usd{type=\"cacheCreation\", project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range])) / sum(max_over_time(claude_code_token_cost_usd{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range])) * 100",
           "instant": true,
@@ -375,40 +555,68 @@
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "output / cacheRead. Output is the priciest lane at 5x input (50x a cache read), and extended thinking is billed as output. The yellow band sits at your own p75, so it moves as you work — re-fit with scripts/recalibrate-thresholds.py. Above it means generation-heavy work — justified for writing code, less so for reading. Lower it with reduced effort and targeted edits over whole-file rewrites.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "output / cacheRead. Output is the priciest lane at 5x input (50x a cache read), and extended thinking is billed as output. The yellow band sits at your own p75, so it moves as you work \u2014 re-fit with scripts/recalibrate-thresholds.py. Above it means generation-heavy work \u2014 justified for writing code, less so for reading. Lower it with reduced effort and targeted edits over whole-file rewrites.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "decimals": 2,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 2 },
-              { "color": "red", "value": 5 }
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1.8
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
             ]
           },
           "unit": "percent"
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 6 },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 6
+      },
       "id": 18,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "textMode": "auto",
         "wideLayout": true
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "sum(max_over_time(claude_code_token_usage{type=\"output\", project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range])) / sum(max_over_time(claude_code_token_usage{type=\"cacheRead\", project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range])) * 100",
           "instant": true,
@@ -421,40 +629,68 @@
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "input / all tokens. Fresh tokens the cache did NOT cover. Should be a rounding error — under 1% means caching is doing its job. Above ~5% something is defeating the prefix cache (context rebuilt in a different shape each turn, or constant model switching).",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "input / all tokens. Fresh tokens the cache did NOT cover. Should be a rounding error \u2014 under 1% means caching is doing its job. Above ~5% something is defeating the prefix cache (context rebuilt in a different shape each turn, or constant model switching).",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "decimals": 2,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 1 },
-              { "color": "red", "value": 5 }
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
             ]
           },
           "unit": "percent"
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 10 },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 10
+      },
       "id": 19,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "textMode": "auto",
         "wideLayout": true
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "sum(max_over_time(claude_code_token_usage{type=\"input\", project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range])) / sum(max_over_time(claude_code_token_usage{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range])) * 100",
           "instant": true,
@@ -467,33 +703,60 @@
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "Total cost / distinct sessions. Read it TOGETHER with the session count next to it: if sessions fell and this rose, that's good — you consolidated work into fewer, longer sessions. It's only a bad signal when total cost rises with it.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Total cost / distinct sessions. Read it TOGETHER with the session count next to it: if sessions fell and this rose, that's good \u2014 you consolidated work into fewer, longer sessions. It's only a bad signal when total cost rises with it.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "decimals": 4,
           "mappings": [],
-          "thresholds": { "mode": "absolute", "steps": [{ "color": "text", "value": null }] },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
           "unit": "currencyUSD"
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 10 },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 10
+      },
       "id": 15,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "textMode": "auto",
         "wideLayout": true
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "sum(max_over_time(claude_code_token_cost_usd{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range])) / count(count by (session_id) (max_over_time(claude_code_token_cost_usd{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range])))",
           "instant": true,
@@ -506,33 +769,60 @@
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "description": "Distinct session_id values in range. Counting distinct IDs stays correct for sessions short enough to fit one export interval, where increase() on the session counter reads 0.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "decimals": 0,
           "mappings": [],
-          "thresholds": { "mode": "absolute", "steps": [{ "color": "text", "value": null }] },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
           "unit": "none"
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 10 },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 10
+      },
       "id": 16,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "textMode": "auto",
         "wideLayout": true
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "count(count by (session_id) (max_over_time(claude_code_token_cost_usd{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range])))",
           "instant": true,
@@ -545,34 +835,60 @@
       "type": "stat"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "What your tokens are made of. Compare against the cost pie to its right — the two look nothing alike, and the cost one is the one that matters. cacheRead dominates tokens because it's the cheap lane.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "What your tokens are made of. Compare against the cost pie to its right \u2014 the two look nothing alike, and the cost one is the one that matters. cacheRead dominates tokens because it's the cheap lane.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
+          "color": {
+            "mode": "palette-classic"
+          },
           "mappings": [],
           "unit": "short"
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 6 },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 6
+      },
       "id": 6,
       "options": {
-        "displayLabels": ["percent"],
+        "displayLabels": [
+          "percent"
+        ],
         "legend": {
           "displayMode": "table",
           "placement": "right",
           "showLegend": true,
-          "values": ["value"]
+          "values": [
+            "value"
+          ]
         },
         "pieType": "donut",
-        "reduceOptions": { "calcs": ["sum"], "fields": "", "values": false },
-        "tooltip": { "mode": "single", "sort": "desc" }
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "desc"
+        }
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "sum by (type) (max_over_time(claude_code_token_usage{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
           "instant": true,
@@ -585,35 +901,61 @@
       "type": "piechart"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "The same four types, priced. This is where your money actually goes. Typically cacheRead shrinks dramatically vs the token pie (it's 0.1x) while cacheCreation (1.25x) and output (5x) balloon. If these two pies looked the same, price wouldn't matter — they never do.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "The same four types, priced. This is where your money actually goes. Typically cacheRead shrinks dramatically vs the token pie (it's 0.1x) while cacheCreation (1.25x) and output (5x) balloon. If these two pies looked the same, price wouldn't matter \u2014 they never do.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
+          "color": {
+            "mode": "palette-classic"
+          },
           "mappings": [],
           "unit": "currencyUSD",
           "decimals": 4
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 6 },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 6
+      },
       "id": 20,
       "options": {
-        "displayLabels": ["percent"],
+        "displayLabels": [
+          "percent"
+        ],
         "legend": {
           "displayMode": "table",
           "placement": "right",
           "showLegend": true,
-          "values": ["value"]
+          "values": [
+            "value"
+          ]
         },
         "pieType": "donut",
-        "reduceOptions": { "calcs": ["sum"], "fields": "", "values": false },
-        "tooltip": { "mode": "single", "sort": "desc" }
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "desc"
+        }
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "sum by (type) (max_over_time(claude_code_token_cost_usd{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
           "instant": true,
@@ -626,18 +968,28 @@
       "type": "piechart"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "Where the money actually goes, priced per token type. The built-in claude_code_cost_usage metric has no `type` label, so this uses the claude_code_token_cost_usd recording rule (see prometheus/rules/claude-cost.yml). Token share and cost share differ wildly — cacheRead is usually most of the tokens and a minority of the cost.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Where the money actually goes, priced per token type. The built-in claude_code_cost_usage metric has no `type` label, so this uses the claude_code_token_cost_usd recording rule (see prometheus/rules/claude-cost.yml). Token share and cost share differ wildly \u2014 cacheRead is usually most of the tokens and a minority of the cost.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
+          "color": {
+            "mode": "palette-classic"
+          },
           "decimals": 4,
           "mappings": [],
           "unit": "currencyUSD"
         },
         "overrides": []
       },
-      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 18 },
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
       "id": 14,
       "options": {
         "displayMode": "gradient",
@@ -652,7 +1004,13 @@
         "minVizWidth": 8,
         "namePlacement": "auto",
         "orientation": "horizontal",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "showUnfilled": true,
         "sizing": "auto",
         "valueMode": "color"
@@ -660,7 +1018,10 @@
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "sum by (type) (max_over_time(claude_code_token_cost_usd{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
           "instant": true,
@@ -674,77 +1035,165 @@
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 24 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 24
+      },
       "id": 106,
       "panels": [],
       "title": "Per-session efficiency",
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "description": "One row per session, so you can see which working styles were efficient. Amortization is the column to scan: long interactive sessions land at 10x+, one-shot runs at 3-5x. Sort by cost to find what to change first.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "mappings": [],
-          "thresholds": { "mode": "absolute", "steps": [{ "color": "text", "value": null }] }
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
         },
         "overrides": [
           {
-            "matcher": { "id": "byName", "options": "Amortization" },
+            "matcher": {
+              "id": "byName",
+              "options": "Amortization"
+            },
             "properties": [
-              { "id": "unit", "value": "none" },
-              { "id": "decimals", "value": 1 },
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              },
               {
                 "id": "custom.cellOptions",
-                "value": { "type": "color-background", "mode": "gradient" }
+                "value": {
+                  "type": "color-background",
+                  "mode": "gradient"
+                }
               },
               {
                 "id": "thresholds",
                 "value": {
                   "mode": "absolute",
                   "steps": [
-                    { "color": "red", "value": null },
-                    { "color": "orange", "value": 2 },
-                    { "color": "yellow", "value": 9 },
-                    { "color": "green", "value": 15 }
+                    {
+                      "color": "red",
+                      "value": null
+                    },
+                    {
+                      "color": "orange",
+                      "value": 2
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 5
+                    },
+                    {
+                      "color": "green",
+                      "value": 12
+                    }
                   ]
                 }
               }
             ]
           },
           {
-            "matcher": { "id": "byName", "options": "Cost" },
+            "matcher": {
+              "id": "byName",
+              "options": "Cost"
+            },
             "properties": [
-              { "id": "unit", "value": "currencyUSD" },
-              { "id": "decimals", "value": 4 }
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "decimals",
+                "value": 4
+              }
             ]
           },
           {
-            "matcher": { "id": "byName", "options": "Gen intensity" },
+            "matcher": {
+              "id": "byName",
+              "options": "Gen intensity"
+            },
             "properties": [
-              { "id": "unit", "value": "percent" },
-              { "id": "decimals", "value": 2 }
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              }
             ]
           },
           {
-            "matcher": { "id": "byName", "options": "Tokens" },
-            "properties": [{ "id": "unit", "value": "short" }]
+            "matcher": {
+              "id": "byName",
+              "options": "Tokens"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              }
+            ]
           }
         ]
       },
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 25 },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 25
+      },
       "id": 21,
       "options": {
         "cellHeight": "sm",
-        "footer": { "countRows": false, "fields": "", "reducer": ["sum"], "show": false },
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
         "showHeader": true,
-        "sortBy": [{ "displayName": "Cost", "desc": true }]
+        "sortBy": [
+          {
+            "displayName": "Cost",
+            "desc": true
+          }
+        ]
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "sum by (session_id) (max_over_time(claude_code_token_cost_usd{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
           "instant": true,
@@ -754,7 +1203,10 @@
           "format": "table"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "sum by (session_id) (max_over_time(claude_code_token_usage{type=\"cacheRead\", project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range])) / sum by (session_id) (max_over_time(claude_code_token_usage{type=\"cacheCreation\", project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
           "instant": true,
@@ -764,7 +1216,10 @@
           "format": "table"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "sum by (session_id) (max_over_time(claude_code_token_usage{type=\"output\", project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range])) / sum by (session_id) (max_over_time(claude_code_token_usage{type=\"cacheRead\", project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range])) * 100",
           "instant": true,
@@ -774,7 +1229,10 @@
           "format": "table"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "sum by (session_id) (max_over_time(claude_code_token_usage{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
           "instant": true,
@@ -788,12 +1246,20 @@
       "transformations": [
         {
           "id": "joinByField",
-          "options": { "byField": "session_id", "mode": "outer" }
+          "options": {
+            "byField": "session_id",
+            "mode": "outer"
+          }
         },
         {
           "id": "organize",
           "options": {
-            "excludeByName": { "Time 1": true, "Time 2": true, "Time 3": true, "Time 4": true },
+            "excludeByName": {
+              "Time 1": true,
+              "Time 2": true,
+              "Time 3": true,
+              "Time 4": true
+            },
             "indexByName": {},
             "renameByName": {
               "session_id": "Session",
@@ -809,18 +1275,28 @@
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 46 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 46
+      },
       "id": 101,
       "panels": [],
       "title": "Tokens",
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "description": "Tokens consumed over time, split by type (input, output, cacheRead, cacheCreation).",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "axisBorderShow": false,
             "axisCenteredZero": false,
@@ -831,37 +1307,61 @@
             "drawStyle": "line",
             "fillOpacity": 25,
             "gradientMode": "none",
-            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
             "insertNulls": false,
             "lineInterpolation": "smooth",
             "lineWidth": 2,
             "pointSize": 5,
-            "scaleDistribution": { "type": "linear" },
+            "scaleDistribution": {
+              "type": "linear"
+            },
             "showPoints": "never",
             "spanNulls": false,
-            "stacking": { "group": "A", "mode": "normal" },
-            "thresholdsStyle": { "mode": "off" }
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
           "mappings": [],
           "unit": "short"
         },
         "overrides": []
       },
-      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 47 },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 47
+      },
       "id": 5,
       "options": {
         "legend": {
-          "calcs": ["sum"],
+          "calcs": [
+            "sum"
+          ],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
         },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "sum by (type) (increase(claude_code_token_usage{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__rate_interval]))",
           "legendFormat": "{{type}}",
@@ -874,18 +1374,28 @@
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 56 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 56
+      },
       "id": 102,
       "panels": [],
       "title": "Cost & activity (secondary)",
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "description": "API-equivalent cost over time, split by model. On a subscription this is a relative signal, not your bill.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "axisBorderShow": false,
             "axisCenteredZero": false,
@@ -896,37 +1406,61 @@
             "drawStyle": "line",
             "fillOpacity": 20,
             "gradientMode": "none",
-            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
             "insertNulls": false,
             "lineInterpolation": "smooth",
             "lineWidth": 2,
             "pointSize": 5,
-            "scaleDistribution": { "type": "linear" },
+            "scaleDistribution": {
+              "type": "linear"
+            },
             "showPoints": "never",
             "spanNulls": false,
-            "stacking": { "group": "A", "mode": "normal" },
-            "thresholdsStyle": { "mode": "off" }
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
           "mappings": [],
           "unit": "currencyUSD"
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 57 },
+      "gridPos": {
+        "h": 8,
+        "w": 16,
+        "x": 0,
+        "y": 57
+      },
       "id": 7,
       "options": {
         "legend": {
-          "calcs": ["sum"],
+          "calcs": [
+            "sum"
+          ],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
         },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "sum by (model) (increase(claude_code_token_cost_usd{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__rate_interval]))",
           "legendFormat": "{{model}}",
@@ -938,34 +1472,60 @@
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "description": "Cost split by where the request originated: main (your prompts), subagent (spawned agents), auxiliary (background/system calls).",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
+          "color": {
+            "mode": "palette-classic"
+          },
           "mappings": [],
           "unit": "currencyUSD"
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 57 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 57
+      },
       "id": 8,
       "options": {
-        "displayLabels": ["percent"],
+        "displayLabels": [
+          "percent"
+        ],
         "legend": {
           "displayMode": "table",
           "placement": "right",
           "showLegend": true,
-          "values": ["value"]
+          "values": [
+            "value"
+          ]
         },
         "pieType": "pie",
-        "reduceOptions": { "calcs": ["sum"], "fields": "", "values": false },
-        "tooltip": { "mode": "single", "sort": "desc" }
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "desc"
+        }
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "sum by (query_source) (increase(claude_code_token_cost_usd{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
           "instant": true,
@@ -978,11 +1538,17 @@
       "type": "piechart"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "description": "Sessions started per day.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "fixed", "fixedColor": "purple" },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "purple"
+          },
           "custom": {
             "axisBorderShow": false,
             "axisCenteredZero": false,
@@ -991,17 +1557,30 @@
             "axisPlacement": "auto",
             "fillOpacity": 80,
             "gradientMode": "none",
-            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
             "lineWidth": 1,
-            "scaleDistribution": { "type": "linear" },
-            "thresholdsStyle": { "mode": "off" }
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
           "mappings": [],
           "unit": "short"
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 65 },
+      "gridPos": {
+        "h": 8,
+        "w": 16,
+        "x": 0,
+        "y": 65
+      },
       "id": 9,
       "options": {
         "barRadius": 0,
@@ -1017,14 +1596,20 @@
         "orientation": "auto",
         "showValue": "auto",
         "stacking": "none",
-        "tooltip": { "mode": "single", "sort": "none" },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
         "xTickLabelRotation": 0,
         "xTickLabelSpacing": 100
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "sum(increase(claude_code_session_count{project=~\"$project\"}[1d]))",
           "format": "time_series",
@@ -1038,42 +1623,93 @@
       "type": "barchart"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "description": "Tokens and cost broken down by model and query source over the selected range.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "custom": {
             "align": "auto",
-            "cellOptions": { "type": "auto" },
+            "cellOptions": {
+              "type": "auto"
+            },
             "inspect": false
           },
           "mappings": [],
-          "thresholds": { "mode": "absolute", "steps": [{ "color": "text", "value": null }] }
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
         },
         "overrides": [
           {
-            "matcher": { "id": "byName", "options": "Cost" },
-            "properties": [{ "id": "unit", "value": "currencyUSD" }]
+            "matcher": {
+              "id": "byName",
+              "options": "Cost"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              }
+            ]
           },
           {
-            "matcher": { "id": "byName", "options": "Tokens" },
-            "properties": [{ "id": "unit", "value": "short" }]
+            "matcher": {
+              "id": "byName",
+              "options": "Tokens"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              }
+            ]
           }
         ]
       },
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 65 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 65
+      },
       "id": 10,
       "options": {
         "cellHeight": "sm",
-        "footer": { "countRows": false, "fields": "", "reducer": ["sum"], "show": true },
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": true
+        },
         "showHeader": true,
-        "sortBy": [{ "displayName": "Cost", "desc": true }]
+        "sortBy": [
+          {
+            "displayName": "Cost",
+            "desc": true
+          }
+        ]
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "sum by (model, query_source) (increase(claude_code_token_cost_usd{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
           "format": "table",
@@ -1088,9 +1724,15 @@
         {
           "id": "organize",
           "options": {
-            "excludeByName": { "Time": true },
+            "excludeByName": {
+              "Time": true
+            },
             "indexByName": {},
-            "renameByName": { "Value": "Cost", "model": "Model", "query_source": "Source" }
+            "renameByName": {
+              "Value": "Cost",
+              "model": "Model",
+              "query_source": "Source"
+            }
           }
         }
       ],
@@ -1098,18 +1740,28 @@
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 73 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 73
+      },
       "id": 103,
       "panels": [],
       "title": "By project",
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "Cost per project. The `project` label is not emitted by Claude Code — it comes from OTEL_RESOURCE_ATTRIBUTES, set by claude-env.sh. Sessions recorded before tagging show up under an empty project.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Cost per project. The `project` label is not emitted by Claude Code \u2014 it comes from OTEL_RESOURCE_ATTRIBUTES, set by claude-env.sh. Sessions recorded before tagging show up under an empty project.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "axisBorderShow": false,
             "axisCenteredZero": false,
@@ -1120,37 +1772,61 @@
             "drawStyle": "line",
             "fillOpacity": 20,
             "gradientMode": "none",
-            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
             "insertNulls": false,
             "lineInterpolation": "smooth",
             "lineWidth": 2,
             "pointSize": 5,
-            "scaleDistribution": { "type": "linear" },
+            "scaleDistribution": {
+              "type": "linear"
+            },
             "showPoints": "never",
             "spanNulls": false,
-            "stacking": { "group": "A", "mode": "normal" },
-            "thresholdsStyle": { "mode": "off" }
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
           "mappings": [],
           "unit": "currencyUSD"
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 74 },
+      "gridPos": {
+        "h": 8,
+        "w": 16,
+        "x": 0,
+        "y": 74
+      },
       "id": 11,
       "options": {
         "legend": {
-          "calcs": ["sum"],
+          "calcs": [
+            "sum"
+          ],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
         },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "sum by (project) (increase(claude_code_token_cost_usd{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__rate_interval]))",
           "legendFormat": "{{project}}",
@@ -1162,32 +1838,76 @@
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "thresholds" }, "mappings": [] },
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": []
+        },
         "overrides": [
           {
-            "matcher": { "id": "byName", "options": "Cost" },
-            "properties": [{ "id": "unit", "value": "currencyUSD" }]
+            "matcher": {
+              "id": "byName",
+              "options": "Cost"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              }
+            ]
           },
           {
-            "matcher": { "id": "byName", "options": "Tokens" },
-            "properties": [{ "id": "unit", "value": "short" }]
+            "matcher": {
+              "id": "byName",
+              "options": "Tokens"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              }
+            ]
           }
         ]
       },
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 74 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 74
+      },
       "id": 12,
       "options": {
         "cellHeight": "sm",
-        "footer": { "countRows": false, "fields": "", "reducer": ["sum"], "show": true },
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": true
+        },
         "showHeader": true,
-        "sortBy": [{ "displayName": "Cost", "desc": true }]
+        "sortBy": [
+          {
+            "displayName": "Cost",
+            "desc": true
+          }
+        ]
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "sum by (project) (increase(claude_code_token_usage{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
           "format": "table",
@@ -1197,7 +1917,10 @@
           "refId": "A"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "expr": "sum by (project) (increase(claude_code_token_cost_usd{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
           "format": "table",
@@ -1211,54 +1934,92 @@
       "transformations": [
         {
           "id": "joinByField",
-          "options": { "byField": "project", "mode": "outer" }
+          "options": {
+            "byField": "project",
+            "mode": "outer"
+          }
         },
         {
           "id": "organize",
           "options": {
-            "excludeByName": { "Time 1": true, "Time 2": true },
+            "excludeByName": {
+              "Time 1": true,
+              "Time 2": true
+            },
             "indexByName": {},
-            "renameByName": { "Value #A": "Tokens", "Value #B": "Cost", "project": "Project" }
+            "renameByName": {
+              "Value #A": "Tokens",
+              "Value #B": "Cost",
+              "project": "Project"
+            }
           }
         }
       ],
       "type": "table"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "cacheRead / (input + cacheRead) — the definition SigNoz uses, included so you can compare against other teams. Their guidance: warn below 60%, or on a drop of more than 15 points week-over-week; reported team values range from under 15% to over 60%. Expect this to sit near 100% for Claude Code, because uncached `input` is almost always negligible — which means it is good for benchmarking but saturated as a day-to-day signal. Use Cache amortization for that instead.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "cacheRead / (input + cacheRead) \u2014 the definition SigNoz uses, included so you can compare against other teams. Their guidance: warn below 60%, or on a drop of more than 15 points week-over-week; reported team values range from under 15% to over 60%. Expect this to sit near 100% for Claude Code, because uncached `input` is almost always negligible \u2014 which means it is good for benchmarking but saturated as a day-to-day signal. Use Cache amortization for that instead.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "decimals": 2,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 45 },
-              { "color": "green", "value": 60 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 45
+              },
+              {
+                "color": "green",
+                "value": 60
+              }
             ]
           },
           "unit": "percent"
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 14 },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 14
+      },
       "id": 23,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "textMode": "auto",
         "wideLayout": true
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "instant": true,
           "range": false,
@@ -1272,18 +2033,28 @@
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 82 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 82
+      },
       "id": 108,
       "panels": [],
       "title": "Rate-limit window (proxy)",
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "Tokens consumed in a rolling 5-hour window — the same window Claude's session limit resets on. This is NOT your quota percentage: Claude Code exports no quota, limit or plan-tier data, so the actual figure exists only in `/usage`. What this shows is the SHAPE of your consumption against that window, so a spike tells you you're burning the window faster than usual even though it can't say how much is left. Check /usage for the authoritative number.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Tokens consumed in a rolling 5-hour window \u2014 the same window Claude's session limit resets on. This is NOT your quota percentage: Claude Code exports no quota, limit or plan-tier data, so the actual figure exists only in `/usage`. What this shows is the SHAPE of your consumption against that window, so a spike tells you you're burning the window faster than usual even though it can't say how much is left. Check /usage for the authoritative number.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "axisBorderShow": false,
             "axisCenteredZero": false,
@@ -1294,37 +2065,61 @@
             "drawStyle": "line",
             "fillOpacity": 25,
             "gradientMode": "none",
-            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
             "insertNulls": false,
             "lineInterpolation": "smooth",
             "lineWidth": 2,
             "pointSize": 5,
-            "scaleDistribution": { "type": "linear" },
+            "scaleDistribution": {
+              "type": "linear"
+            },
             "showPoints": "never",
             "spanNulls": false,
-            "stacking": { "group": "A", "mode": "normal" },
-            "thresholdsStyle": { "mode": "off" }
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
           "mappings": [],
           "unit": "short"
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 83 },
+      "gridPos": {
+        "h": 8,
+        "w": 16,
+        "x": 0,
+        "y": 83
+      },
       "id": 24,
       "options": {
         "legend": {
-          "calcs": ["sum"],
+          "calcs": [
+            "sum"
+          ],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
         },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "legendFormat": "{{type}}",
           "range": true,
@@ -1337,33 +2132,60 @@
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "Tokens consumed in a rolling 5-hour window — the same window Claude's session limit resets on. This is NOT your quota percentage: Claude Code exports no quota, limit or plan-tier data, so the actual figure exists only in `/usage`. What this shows is the SHAPE of your consumption against that window, so a spike tells you you're burning the window faster than usual even though it can't say how much is left. Check /usage for the authoritative number.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Tokens consumed in a rolling 5-hour window \u2014 the same window Claude's session limit resets on. This is NOT your quota percentage: Claude Code exports no quota, limit or plan-tier data, so the actual figure exists only in `/usage`. What this shows is the SHAPE of your consumption against that window, so a spike tells you you're burning the window faster than usual even though it can't say how much is left. Check /usage for the authoritative number.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "decimals": 1,
           "mappings": [],
-          "thresholds": { "mode": "absolute", "steps": [{ "color": "text", "value": null }] },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
           "unit": "short"
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 83 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 83
+      },
       "id": 25,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "textMode": "auto",
         "wideLayout": true
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "instant": true,
           "range": false,
@@ -1377,18 +2199,28 @@
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 91 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 91
+      },
       "id": 109,
       "panels": [],
       "title": "Edit decisions (quality signal)",
       "type": "row"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "Share of suggested edits you kept. The strongest quality signal available from metrics alone: a falling rate means the edits are landing wide of what you wanted. SigNoz suggests warning above 30% rejection, i.e. below 70% here. Covers EDIT tools only — Edit, Write and NotebookEdit. Read, Bash and Grep are not represented; those need the events pipeline. Shows 'No data' until an edit is accepted or rejected in a telemetry-enabled session.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Share of suggested edits you kept. The strongest quality signal available from metrics alone: a falling rate means the edits are landing wide of what you wanted. SigNoz suggests warning above 30% rejection, i.e. below 70% here. Covers EDIT tools only \u2014 Edit, Write and NotebookEdit. Read, Bash and Grep are not represented; those need the events pipeline. Shows 'No data' until an edit is accepted or rejected in a telemetry-enabled session.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "decimals": 1,
           "mappings": [],
           "max": 100,
@@ -1397,22 +2229,42 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 70 },
-              { "color": "green", "value": 85 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "green",
+                "value": 85
+              }
             ]
           },
           "unit": "percent"
         },
         "overrides": []
       },
-      "gridPos": { "h": 7, "w": 6, "x": 0, "y": 92 },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 0,
+        "y": 92
+      },
       "id": 26,
       "options": {
         "minVizHeight": 75,
         "minVizWidth": 75,
         "orientation": "auto",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "showThresholdLabels": false,
         "showThresholdMarkers": true,
         "sizing": "auto"
@@ -1420,7 +2272,10 @@
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "instant": true,
           "range": false,
@@ -1433,18 +2288,28 @@
       "type": "gauge"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "Accepted vs rejected, by the edit tool used. Covers EDIT tools only — Edit, Write and NotebookEdit. Read, Bash and Grep are not represented; those need the events pipeline. Shows 'No data' until an edit is accepted or rejected in a telemetry-enabled session.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Accepted vs rejected, by the edit tool used. Covers EDIT tools only \u2014 Edit, Write and NotebookEdit. Read, Bash and Grep are not represented; those need the events pipeline. Shows 'No data' until an edit is accepted or rejected in a telemetry-enabled session.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
+          "color": {
+            "mode": "palette-classic"
+          },
           "mappings": [],
           "noValue": "No edits yet",
           "unit": "short"
         },
         "overrides": []
       },
-      "gridPos": { "h": 7, "w": 9, "x": 6, "y": 92 },
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 6,
+        "y": 92
+      },
       "id": 27,
       "options": {
         "displayMode": "gradient",
@@ -1459,7 +2324,13 @@
         "minVizWidth": 8,
         "namePlacement": "auto",
         "orientation": "horizontal",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "showUnfilled": true,
         "sizing": "auto",
         "valueMode": "color"
@@ -1467,12 +2338,15 @@
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "instant": true,
           "range": false,
           "refId": "A",
-          "legendFormat": "{{tool_name}} · {{decision}}",
+          "legendFormat": "{{tool_name}} \u00b7 {{decision}}",
           "expr": "sum by (tool_name, decision) (max_over_time(claude_code_code_edit_tool_decision{project=~\"$project\"}[$__range]))"
         }
       ],
@@ -1480,35 +2354,66 @@
       "type": "bargauge"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "Which languages the edits land in, and whether they stick. A language with a poor accept rate is worth a closer prompt. Covers EDIT tools only — Edit, Write and NotebookEdit. Read, Bash and Grep are not represented; those need the events pipeline. Shows 'No data' until an edit is accepted or rejected in a telemetry-enabled session.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Which languages the edits land in, and whether they stick. A language with a poor accept rate is worth a closer prompt. Covers EDIT tools only \u2014 Edit, Write and NotebookEdit. Read, Bash and Grep are not represented; those need the events pipeline. Shows 'No data' until an edit is accepted or rejected in a telemetry-enabled session.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "hideFrom": { "legend": false, "tooltip": false, "viz": false } },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
           "mappings": [],
           "noValue": "No edits yet"
         },
         "overrides": []
       },
-      "gridPos": { "h": 7, "w": 9, "x": 15, "y": 92 },
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 15,
+        "y": 92
+      },
       "id": 28,
       "options": {
         "legend": {
           "displayMode": "table",
           "placement": "right",
           "showLegend": true,
-          "values": ["value", "percent"]
+          "values": [
+            "value",
+            "percent"
+          ]
         },
         "pieType": "donut",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "sort": "desc",
-        "tooltip": { "mode": "single", "sort": "none" }
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "instant": true,
           "range": false,
@@ -1522,38 +2427,62 @@
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 99 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 99
+      },
       "id": 110,
       "panels": [],
       "title": "Latency & reliability (events)",
       "type": "row"
     },
     {
-      "datasource": { "type": "loki", "uid": "loki" },
-      "description": "How long Claude takes per API call. p95 is what a slow turn feels like. There is no metric for this — duration_ms exists only on the api_request event. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill — transcripts carry no timing data.",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "How long Claude takes per API call. p95 is what a slow turn feels like. There is no metric for this \u2014 duration_ms exists only on the api_request event. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill \u2014 transcripts carry no timing data.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
+          "color": {
+            "mode": "palette-classic"
+          },
           "mappings": [],
           "noValue": "No events yet",
           "unit": "ms"
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 100 },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 100
+      },
       "id": 30,
       "options": {
         "legend": {
-          "calcs": ["mean", "max"],
+          "calcs": [
+            "mean",
+            "max"
+          ],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "loki", "uid": "loki" },
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
           "expr": "quantile_over_time(0.95, {service_name=\"claude-code\"} | event_name=\"api_request\" | unwrap duration_ms [$__auto]) by (model)",
           "queryType": "range",
           "refId": "A"
@@ -1563,31 +2492,50 @@
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "loki", "uid": "loki" },
-      "description": "Which tools cost you wall-clock time. The lever for 'work gets easier' rather than 'work gets cheaper' — slow tools waste minutes, not tokens. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill — transcripts carry no timing data.",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "Which tools cost you wall-clock time. The lever for 'work gets easier' rather than 'work gets cheaper' \u2014 slow tools waste minutes, not tokens. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill \u2014 transcripts carry no timing data.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
+          "color": {
+            "mode": "palette-classic"
+          },
           "mappings": [],
           "noValue": "No events yet",
           "unit": "ms"
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 100 },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 100
+      },
       "id": 31,
       "options": {
         "legend": {
-          "calcs": ["mean", "max"],
+          "calcs": [
+            "mean",
+            "max"
+          ],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "loki", "uid": "loki" },
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
           "expr": "quantile_over_time(0.95, {service_name=\"claude-code\"} | event_name=\"tool_result\" | unwrap duration_ms [$__auto]) by (tool_name)",
           "queryType": "range",
           "refId": "A"
@@ -1597,31 +2545,50 @@
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "loki", "uid": "loki" },
-      "description": "Call counts for EVERY tool — Read, Bash, Grep included. The code_edit_tool_decision metric only covers Edit/Write/NotebookEdit; this is the complete picture. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill — transcripts carry no timing data.",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "Call counts for EVERY tool \u2014 Read, Bash, Grep included. The code_edit_tool_decision metric only covers Edit/Write/NotebookEdit; this is the complete picture. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill \u2014 transcripts carry no timing data.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
+          "color": {
+            "mode": "palette-classic"
+          },
           "mappings": [],
           "noValue": "No events yet",
           "unit": "short"
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 108 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 108
+      },
       "id": 32,
       "options": {
         "legend": {
-          "calcs": ["mean", "max"],
+          "calcs": [
+            "mean",
+            "max"
+          ],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "loki", "uid": "loki" },
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
           "expr": "sum by (tool_name) (count_over_time({service_name=\"claude-code\"} | event_name=\"tool_result\" [$__auto]))",
           "queryType": "range",
           "refId": "A"
@@ -1631,31 +2598,50 @@
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "loki", "uid": "loki" },
-      "description": "Share of tool executions that failed. A tool failing repeatedly means wasted turns — each retry costs a full context re-read. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill — transcripts carry no timing data.",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "Share of tool executions that failed. A tool failing repeatedly means wasted turns \u2014 each retry costs a full context re-read. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill \u2014 transcripts carry no timing data.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
+          "color": {
+            "mode": "palette-classic"
+          },
           "mappings": [],
           "noValue": "No events yet",
           "unit": "percent"
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 108 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 108
+      },
       "id": 33,
       "options": {
         "legend": {
-          "calcs": ["mean", "max"],
+          "calcs": [
+            "mean",
+            "max"
+          ],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "loki", "uid": "loki" },
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
           "expr": "sum(count_over_time({service_name=\"claude-code\"} | event_name=\"tool_result\" | success=\"false\" [$__auto])) / sum(count_over_time({service_name=\"claude-code\"} | event_name=\"tool_result\" [$__auto])) * 100",
           "queryType": "range",
           "refId": "A"
@@ -1665,31 +2651,50 @@
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "loki", "uid": "loki" },
-      "description": "Failed API calls with status code. Retries are invisible in the metrics but show up here, and each one costs a full request. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill — transcripts carry no timing data.",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "Failed API calls with status code. Retries are invisible in the metrics but show up here, and each one costs a full request. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill \u2014 transcripts carry no timing data.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
+          "color": {
+            "mode": "palette-classic"
+          },
           "mappings": [],
           "noValue": "No events yet",
           "unit": "short"
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 108 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 108
+      },
       "id": 34,
       "options": {
         "legend": {
-          "calcs": ["mean", "max"],
+          "calcs": [
+            "mean",
+            "max"
+          ],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "loki", "uid": "loki" },
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
           "expr": "sum by (status_code) (count_over_time({service_name=\"claude-code\"} | event_name=\"api_error\" [$__auto]))",
           "queryType": "range",
           "refId": "A"
@@ -1700,25 +2705,40 @@
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 116 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 116
+      },
       "id": 111,
       "panels": [],
       "title": "Engagement & environment",
       "type": "row"
     },
     {
-      "datasource": { "type": "loki", "uid": "loki" },
-      "description": "Prompts per session — interaction depth. A session with many prompts is one where you kept working in the same context; lots of 1-prompt sessions means fragmentation, which is what drives cache-write cost. From events, so live sessions only.",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "Prompts per session \u2014 interaction depth. A session with many prompts is one where you kept working in the same context; lots of 1-prompt sessions means fragmentation, which is what drives cache-write cost. From events, so live sessions only.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
+          "color": {
+            "mode": "palette-classic"
+          },
           "mappings": [],
           "noValue": "No events yet",
           "unit": "short"
         },
         "overrides": []
       },
-      "gridPos": { "h": 7, "w": 10, "x": 0, "y": 117 },
+      "gridPos": {
+        "h": 7,
+        "w": 10,
+        "x": 0,
+        "y": 117
+      },
       "id": 35,
       "options": {
         "displayMode": "gradient",
@@ -1733,14 +2753,23 @@
         "minVizWidth": 8,
         "namePlacement": "auto",
         "orientation": "horizontal",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "showUnfilled": true,
         "sizing": "auto",
         "valueMode": "color"
       },
       "targets": [
         {
-          "datasource": { "type": "loki", "uid": "loki" },
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
           "queryType": "range",
           "refId": "A",
           "legendFormat": "{{session_id}}",
@@ -1751,11 +2780,16 @@
       "type": "bargauge"
     },
     {
-      "datasource": { "type": "loki", "uid": "loki" },
-      "description": "Share of API calls that did not error. Retries are invisible in the metrics but each one costs a full request — a dip here means tokens spent on work that had to be redone. From events, so live sessions only.",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "Share of API calls that did not error. Retries are invisible in the metrics but each one costs a full request \u2014 a dip here means tokens spent on work that had to be redone. From events, so live sessions only.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "decimals": 2,
           "mappings": [],
           "max": 100,
@@ -1764,29 +2798,52 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 98 },
-              { "color": "green", "value": 99.5 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 98
+              },
+              {
+                "color": "green",
+                "value": 99.5
+              }
             ]
           },
           "unit": "percent"
         },
         "overrides": []
       },
-      "gridPos": { "h": 7, "w": 6, "x": 10, "y": 117 },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 10,
+        "y": 117
+      },
       "id": 36,
       "options": {
         "minVizHeight": 75,
         "minVizWidth": 75,
         "orientation": "auto",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "showThresholdLabels": false,
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
       "targets": [
         {
-          "datasource": { "type": "loki", "uid": "loki" },
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
           "queryType": "range",
           "refId": "A",
           "legendFormat": "success",
@@ -1797,36 +2854,67 @@
       "type": "gauge"
     },
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "Where Claude Code is being run from — terminal emulator, VS Code, tmux. Counts only sessions that carry a terminal_type label, i.e. live telemetry; sessions recovered from transcripts have no environment recorded and are excluded. Useful mainly to confirm a new environment is reporting.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Where Claude Code is being run from \u2014 terminal emulator, VS Code, tmux. Counts only sessions that carry a terminal_type label, i.e. live telemetry; sessions recovered from transcripts have no environment recorded and are excluded. Useful mainly to confirm a new environment is reporting.",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "hideFrom": { "legend": false, "tooltip": false, "viz": false } },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
           "mappings": [],
           "noValue": "No data",
           "unit": "short"
         },
         "overrides": []
       },
-      "gridPos": { "h": 7, "w": 8, "x": 16, "y": 117 },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 16,
+        "y": 117
+      },
       "id": 37,
       "options": {
         "legend": {
           "displayMode": "table",
           "placement": "right",
           "showLegend": true,
-          "values": ["value", "percent"]
+          "values": [
+            "value",
+            "percent"
+          ]
         },
         "pieType": "donut",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "sort": "desc",
-        "tooltip": { "mode": "single", "sort": "none" }
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
       },
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "editorMode": "code",
           "instant": true,
           "range": false,
