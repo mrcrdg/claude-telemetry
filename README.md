@@ -32,12 +32,18 @@ Claude Code ──OTLP gRPC :4317──▶ OTel Collector ──:8889──▶ P
    docker compose up -d
    ```
 
-2. **Point Claude Code at the collector**, then launch it:
+2. **Point Claude Code at the collector**, then launch it. Run this once per
+   terminal, from any directory — the argument is the project name that shows
+   up on the dashboard:
 
    ```bash
-   source ./claude-env.sh
+   source ~/path/to/claude-telemetry/claude-env.sh my-project
    claude
    ```
+
+   Omit the name and the current directory name is used. It must be `source`d,
+   not executed — a script run normally sets variables in its own process,
+   which exits immediately and leaves your shell untouched.
 
    This sets:
 

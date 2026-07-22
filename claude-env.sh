@@ -1,15 +1,18 @@
-# Source this before launching Claude Code so it exports OpenTelemetry
-# metrics to the local collector:
+# Source this before launching Claude Code so its metrics are tagged with a
+# project name. Run it once per terminal, from anywhere:
 #
-#     source ./claude-env.sh
+#     source ~/Documents/studies_tests/claude-telemetry/claude-env.sh my-project
 #     claude
 #
-# Metrics are tagged with a `project` label taken from the current directory
-# name. Override it by setting CLAUDE_TELEMETRY_PROJECT first:
+# The project name is optional — omit it and the current directory name is
+# used instead:
 #
-#     CLAUDE_TELEMETRY_PROJECT=my-app source ./claude-env.sh
+#     source ~/.../claude-env.sh          # project = name of the current dir
 #
-# Unset again with:  source ./claude-env.sh --unset
+# It must be `source`d, not executed: a script run normally sets variables in
+# its own process, which exits immediately, leaving your shell unchanged.
+#
+# Unset again with:  source ~/.../claude-env.sh --unset
 
 if [ "$1" = "--unset" ]; then
   unset CLAUDE_CODE_ENABLE_TELEMETRY
@@ -45,8 +48,13 @@ export OTEL_METRIC_EXPORT_INTERVAL=10000
 # regardless of `resource_to_telemetry_conversion` in the collector config —
 # that setting only governs *resource*-level attributes.
 #
+# Name resolution, first match wins:
+#   1. the argument you passed    source claude-env.sh my-project
+#   2. $CLAUDE_TELEMETRY_PROJECT  CLAUDE_TELEMETRY_PROJECT=my-project source ...
+#   3. the current directory name
+#
 # Values may not contain spaces or non-ASCII, so squash anything else to "_".
-_claude_project="${CLAUDE_TELEMETRY_PROJECT:-$(basename "$PWD")}"
+_claude_project="${1:-${CLAUDE_TELEMETRY_PROJECT:-$(basename "$PWD")}}"
 _claude_project="$(printf '%s' "$_claude_project" | tr -c 'A-Za-z0-9._-' '_')"
 export OTEL_RESOURCE_ATTRIBUTES="project=${_claude_project}"
 unset _claude_project
