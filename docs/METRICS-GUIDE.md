@@ -134,35 +134,49 @@ content, and the cache should be covering almost everything.
 
 Observed here: 0.2%. Healthy.
 
+### 3.4 `cacheRead / (input + cacheRead)` — the community cache hit rate
+
+This is the definition **SigNoz** uses, and the closest thing to a shared
+industry metric. Their guidance: warn below **60%**, or on a drop of more than
+**15 points week-over-week**. Reported team values span under 15% to over 60%.
+
+It's on the dashboard for cross-team comparability — but expect it to read
+~100% for Claude Code, because uncached `input` is almost always negligible.
+Measured here: **99.98%**. Excellent by the community bar, and useless as a
+daily signal, because it can't move. Use amortization (§3.1) for that.
+
 ### Where these thresholds come from — and their limits
 
-Be skeptical of the green/yellow/red bands. They are **not** an industry
-benchmark; no published baseline for Claude Code efficiency exists. They come
-from two different places, and only one of them is solid:
+Three different kinds of number are mixed together on that scorecard. Only the
+first is authoritative:
 
-**Derived from published pricing (trustworthy):**
-- The **2.11× break-even** for cache amortization is arithmetic from the
-  published cache multipliers — 2× to write, 0.1× to read. It isn't a matter of
-  opinion, and it's why the amortization red band sits below 2×.
-- The relative ordering of the four lanes (cacheRead ≪ input < cacheCreation ≪
-  output) is likewise just the price table.
+**1. Arithmetic from published pricing (trustworthy).** The **2.11× break-even**
+for amortization falls straight out of the published multipliers — 2× to write,
+0.1× to read. It's why the red band sits below 2×, and it isn't a matter of
+opinion. The ordering of the four lanes (cacheRead ≪ input < cacheCreation ≪
+output) is likewise just the price table.
 
-**My judgement, calibrated on a small sample (treat as provisional):**
-- The 5× / 10× "healthy" and "excellent" amortization bands.
-- Cache-write cost share 30% / 50%.
-- Generation intensity 3% / 5%.
-- Uncached input 1% / 5%.
+**2. A published community threshold (one external source).** The 60% cache-hit
+warning comes from SigNoz. It's a real external reference, but it's one vendor's
+guidance, not a standard — and as noted above it doesn't discriminate here.
 
-Those four came from reasoning about the price ratios plus **a handful of
-sessions on one machine** — not a population. They're a starting point, not a
-verdict. If your work is legitimately generation-heavy, a "red" generation
-intensity may be perfectly correct for you.
+**3. This machine's own baseline (what the green/yellow bands actually are).**
+Measured across 14 recovered sessions:
 
-**The benchmark that actually matters is your own history.** After a few weeks,
-compare today against your own rolling median rather than my bands, and adjust
-the thresholds in the panel JSON to match how you actually work. A number
-drifting away from *your* normal is the real signal; a number outside *my*
-guess is only a prompt to look.
+| | min | p25 | median | p75 | max |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| amortization | 2.3× | 9.1× | **14.6×** | 27.8× | 73.8× |
+| generation intensity | — | — | **1.00%** | 1.97% | 12.52% |
+
+The bands are set from those percentiles: amortization yellow at p25 (9×) and
+green at the median (15×); generation intensity yellow at p75 (2%). So "green"
+means *at or better than how you normally work* — not that you've hit some
+external standard.
+
+**Every source found says the same thing:** establish your own baseline over
+two to four weeks and alert on drift from it, rather than trusting absolute
+targets. Re-run the percentile query as your history grows and move the bands.
+There is no published "correct" number to reach for.
 
 ### Summary: what to maximize and minimize
 
