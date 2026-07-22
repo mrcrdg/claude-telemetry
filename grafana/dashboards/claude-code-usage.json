@@ -61,7 +61,7 @@
           "query": "label_values(claude_code_token_cost_usd, project)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
-        "refresh": 2,
+        "refresh": 1,
         "regex": "",
         "sort": 1,
         "type": "query"
@@ -80,7 +80,7 @@
           "query": "label_values(claude_code_token_cost_usd, model)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
-        "refresh": 2,
+        "refresh": 1,
         "regex": "",
         "sort": 1,
         "type": "query"
@@ -99,7 +99,7 @@
           "query": "label_values(claude_code_token_cost_usd, query_source)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
-        "refresh": 2,
+        "refresh": 1,
         "regex": "",
         "sort": 1,
         "type": "query"
