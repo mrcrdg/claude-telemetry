@@ -69,6 +69,11 @@ Claude Code ──OTLP gRPC :4317──▶ OTel Collector ──:8889──▶ P
 - *Cost per session* and *Sessions (distinct)* — unit economics. Both count
   distinct `session_id`s so the ratio is always internally consistent.
 
+**→ [docs/METRICS-GUIDE.md](docs/METRICS-GUIDE.md)** explains what each token
+type means, the ratios worth watching (and their healthy ranges), what to do
+when one goes the wrong way, and why subscription plan limits can't appear
+here.
+
 **Tokens** (lead)
 - *Tokens over time by type* — stacked series for `input`, `output`,
   `cacheRead`, `cacheCreation`.
