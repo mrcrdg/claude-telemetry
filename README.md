@@ -180,6 +180,9 @@ false` so there's no `_total`/unit suffix mangling):
   python3 scripts/backfill-from-transcripts.py -o /tmp/backfill.om
   ```
 
+  Afterwards, `python3 scripts/check-data-quality.py` reconciles the result
+  against Claude Code's own cost metric and exits non-zero on a mismatch.
+
   It skips sessions Prometheus already has (no double-counting) and, by
   default, anything newer than 3 hours — see the block-overlap warning above.
   Loading instructions are in the script's docstring.

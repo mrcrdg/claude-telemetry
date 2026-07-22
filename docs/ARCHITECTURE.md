@@ -218,4 +218,34 @@ a second. dbt would add a compiler for a single transformation.
 | **Kafka** | More than one producer host, or losing data during a collector restart becomes unacceptable. |
 | **Airflow/Dagster** | The backfill needs to run on a schedule, or any second batch job appears. |
 | **dbt + a warehouse** | You want to join telemetry against something else — git history, ticket data, CI runs — which Prometheus cannot do. |
-| **Data tests** | Now, honestly. It's the cheapest of the four and would have caught a real bug. |
+| **Data tests** | Done — `scripts/check-data-quality.py`, see below. |
+
+### Why not Great Expectations / dbt tests
+
+Both validate **tabular batches** — a DataFrame, or a table in a warehouse.
+The data here is time series in a TSDB, queried with PromQL, which neither
+speaks. Wiring GX in would mean PromQL → DataFrame → expectation suite, adding
+a Data Context, suites and checkpoints to express what is currently six
+assertions.
+
+The checks that actually matter here aren't column constraints (`not_null`,
+`unique`) — they're **reconciliations between series**, so they're written as
+PromQL:
+
+| check | what it catches |
+| --- | --- |
+| derived cost vs `claude_code_cost_usage` | wrong rates in the recording rule — Claude Code emits its own cost figure, so we have independent ground truth |
+| every model with tokens has cost | a model missing from the rate table, which vanishes from cost panels without erroring |
+| stored cost vs tokens × current rates | data written before a rate change; recording rules never revisit old samples |
+| label completeness per path | the backfill/live schema drift that hid most of the history |
+| freshness | nothing arriving |
+
+The first of those **found a real bug on its first run**: session `24a61c47`
+is stored 21.5% under Claude Code's own figure, because it was imported while
+`cacheCreation` was still priced at 1.25×. The rate was corrected in both the
+rule and the script, but already-written samples were never revisited — which
+is exactly the failure mode a reconciliation check exists to catch.
+
+The right heavier tool, if this grew, would be **`promtool test rules`** —
+Prometheus's native unit-test framework for recording rules — plus alerting
+rules for freshness. Both speak PromQL natively.
