@@ -114,7 +114,7 @@
   "timezone": "browser",
   "title": "Claude Code — Token Usage",
   "uid": "claude-code-usage",
-  "version": 7,
+  "version": 8,
   "weekStart": "",
   "panels": [
     {
@@ -1268,6 +1268,111 @@
         }
       ],
       "title": "Cache hit rate (SigNoz)",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 82 },
+      "id": 108,
+      "panels": [],
+      "title": "Rate-limit window (proxy)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "description": "Tokens consumed in a rolling 5-hour window — the same window Claude's session limit resets on. This is NOT your quota percentage: Claude Code exports no quota, limit or plan-tier data, so the actual figure exists only in `/usage`. What this shows is the SHAPE of your consumption against that window, so a spike tells you you're burning the window faster than usual even though it can't say how much is left. Check /usage for the authoritative number.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 25,
+            "gradientMode": "none",
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": { "type": "linear" },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": { "group": "A", "mode": "normal" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "mappings": [],
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 83 },
+      "id": 24,
+      "options": {
+        "legend": {
+          "calcs": ["sum"],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "editorMode": "code",
+          "legendFormat": "{{type}}",
+          "range": true,
+          "refId": "A",
+          "instant": false,
+          "expr": "sum by (type) (increase(claude_code_token_usage{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[5h]))"
+        }
+      ],
+      "title": "Rolling 5h token usage (session-limit window)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "description": "Tokens consumed in a rolling 5-hour window — the same window Claude's session limit resets on. This is NOT your quota percentage: Claude Code exports no quota, limit or plan-tier data, so the actual figure exists only in `/usage`. What this shows is the SHAPE of your consumption against that window, so a spike tells you you're burning the window faster than usual even though it can't say how much is left. Check /usage for the authoritative number.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "decimals": 1,
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "text", "value": null }] },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 83 },
+      "id": 25,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "editorMode": "code",
+          "instant": true,
+          "range": false,
+          "refId": "A",
+          "legendFormat": "tokens",
+          "expr": "sum(increase(claude_code_token_usage{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[5h]))"
+        }
+      ],
+      "title": "Tokens in the last 5h",
       "type": "stat"
     }
   ]
