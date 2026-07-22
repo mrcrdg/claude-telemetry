@@ -23,7 +23,13 @@ prometheus/prometheus.yml                  # scrapes the collector every 15s
 grafana/provisioning/datasources/          # auto-wires the Prometheus datasource
 grafana/provisioning/dashboards/           # tells Grafana to load dashboards from disk
 grafana/dashboards/claude-code-usage.json  # THE dashboard (checked in, source of truth)
+prometheus/rules/claude-cost.yml           # recording rule: tokens -> USD, per token type
 claude-env.sh                              # source to set Claude Code's telemetry env vars
+project-map.json                           # cwd -> project overrides where git can't tell
+scripts/backfill-from-transcripts.py       # recover sessions that ran without telemetry
+scripts/check-data-quality.py              # reconciliations; run after any backfill
+.claude/commands/                          # /backfill, /check, /stack
+docs/                                      # architecture, metrics guide, playbook
 ```
 
 ## How to validate changes (no live daemon required)
