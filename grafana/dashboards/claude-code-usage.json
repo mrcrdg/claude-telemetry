@@ -111,7 +111,7 @@
   "timezone": "browser",
   "title": "Claude Code — Token Usage",
   "uid": "claude-code-usage",
-  "version": 5,
+  "version": 6,
   "weekStart": "",
   "panels": [
     {
@@ -124,7 +124,7 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "Total tokens across all types in the selected range.",
+      "description": "Total tokens of every type whose session was active in the selected range. Uses max_over_time rather than increase() so sessions that finished before the window still count — increase() reports 0 for those.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "fixed", "fixedColor": "blue" },
@@ -149,7 +149,7 @@
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "editorMode": "code",
-          "expr": "sum(increase(claude_code_token_usage{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
+          "expr": "sum(max_over_time(claude_code_token_usage{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
           "instant": true,
           "legendFormat": "tokens",
           "range": false,
@@ -161,7 +161,7 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "API-equivalent cost. On a subscription this is NOT your bill — treat as a relative signal only.",
+      "description": "API-equivalent cost. On a subscription this is NOT your bill — it is what the same work would cost on pay-as-you-go, useful for comparing projects and sessions, not for predicting a charge.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "fixed", "fixedColor": "green" },
@@ -186,7 +186,7 @@
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "editorMode": "code",
-          "expr": "sum(increase(claude_code_token_cost_usd{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
+          "expr": "sum(max_over_time(claude_code_token_cost_usd{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
           "instant": true,
           "legendFormat": "cost",
           "range": false,
@@ -198,7 +198,7 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "Sessions started in the selected range.",
+      "description": "Distinct sessions in range, counted from token data so recovered sessions are included. The claude_code_session_count metric is not used here: it only exists for sessions that ran with telemetry enabled, and cannot be reconstructed from transcripts.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "fixed", "fixedColor": "purple" },
@@ -223,7 +223,7 @@
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "editorMode": "code",
-          "expr": "sum(increase(claude_code_session_count{project=~\"$project\"}[$__range]))",
+          "expr": "count(count by (session_id) (max_over_time(claude_code_token_cost_usd{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range])))",
           "instant": true,
           "legendFormat": "sessions",
           "range": false,
@@ -235,7 +235,7 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "Total active coding time in the selected range.",
+      "description": "Active coding time — LIVE SESSIONS ONLY. Transcripts carry no timing data, so sessions recovered by the backfill script contribute nothing here. Reads 0 if no telemetry-enabled session ran in the window.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "fixed", "fixedColor": "orange" },
