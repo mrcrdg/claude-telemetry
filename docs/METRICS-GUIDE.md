@@ -45,22 +45,24 @@ have wildly different prices. Per token, relative to `input`:
 | --- | --- | --- | --- |
 | `cacheRead` | **0.1×** | $0.50 | $0.10 |
 | `input` | 1× | $5.00 | $1.00 |
-| `cacheCreation` | **1.25×** | $6.25 | $1.25 |
+| `cacheCreation` | **2×** | $10.00 | $2.00 |
 | `output` | **5×** | $25.00 | $5.00 |
 
 Two consequences worth internalizing:
 
-- **A cacheRead token is 50× cheaper than an output token.** Volume in the
-  cheap lane is nearly free; volume in the expensive lane is not.
-- **Token share ≠ cost share.** In this repo's first captured day, `cacheRead`
-  was 86% of tokens but 31% of cost, while `cacheCreation` was 12% of tokens
-  and **55% of cost**. Reading a token-count chart alone would have pointed you
-  at exactly the wrong thing.
+- **A cacheRead token is 50× cheaper than an output token**, and 20× cheaper
+  than a cacheCreation token. Volume in the cheap lane is nearly free; volume
+  in the expensive lanes is not.
+- **Token share ≠ cost share.** Measured here: `cacheRead` is ~91% of tokens
+  but **27% of cost**, while `cacheCreation` is ~8% of tokens and **46% of
+  cost**. Reading a token-count chart alone points you at exactly the wrong
+  thing.
 
-> The `cacheCreation` multiplier is 1.25× at the 5-minute cache TTL and 2× at
-> the 1-hour TTL. Claude Code doesn't report which it used, so the cost figures
-> here are a **floor** — if a 1h TTL is in play, cache writes cost more than
-> shown, never less.
+> The `cacheCreation` multiplier is 2× — the **1-hour** cache TTL rate (the
+> 5-minute rate would be 1.25×). Verified against local transcripts: all
+> 4,196,742 cache-creation tokens across 1,262 messages were
+> `ephemeral_1h_input_tokens`, none were 5m. Re-check on your own machine with
+> `jq -r '.message.usage.cache_creation | select(.)' ~/.claude/projects/*/*.jsonl`.
 
 Everything is **API-equivalent pricing**. On a subscription this is not your
 bill. It's a consistent yardstick for comparing sessions, projects, and habits.
@@ -77,24 +79,24 @@ Absolute totals mostly tell you how much you worked. Ratios tell you how
 **The single most useful number.** How many times you got to reuse what you
 paid to cache.
 
-Caching isn't free: writing N tokens costs 1.25N instead of the 1.0N you'd pay
-sending them fresh. You're 0.25N in the hole, and each later read of that
-prefix saves you 0.9N. So:
+Caching isn't free: writing N tokens costs 2N instead of the 1.0N you'd pay
+sending them fresh. You're N in the hole, and each later read of that prefix
+saves you 0.9N. So:
 
 ```
-cached:   1.25N + 0.1N x (R-1)      uncached: 1.0N x R      (R = requests sharing the prefix)
-break-even at R ≈ 1.3
+cached:   2N + 0.1N x (R-1)      uncached: 1.0N x R      (R = requests sharing the prefix)
+break-even at R ≈ 2.11
 ```
 
-**Caching pays for itself from the second turn onward.** After that every read
-is nearly pure savings.
+**Caching pays for itself from the third turn onward.** After that every read
+is nearly pure savings — by R=12 you pay 3.1N instead of 12N.
 
 | ratio | reading |
 | --- | --- |
-| **< 1×** | Bad. You're writing cache you barely use — sessions dying before they amortize. |
-| **1–3×** | Weak. Typical of very short one-shot sessions. |
+| **< 2×** | Bad — below break-even. Caching is costing you more than sending fresh would. |
+| **2–5×** | Weak. Typical of very short one-shot sessions. |
 | **5–15×** | Healthy. Normal interactive work. |
-| **> 20×** | Excellent — a long session reusing a stable context. |
+| **> 15×** | Excellent — a long session reusing a stable context. |
 
 Real numbers from this setup:
 
@@ -132,13 +134,43 @@ content, and the cache should be covering almost everything.
 
 Observed here: 0.2%. Healthy.
 
+### Where these thresholds come from — and their limits
+
+Be skeptical of the green/yellow/red bands. They are **not** an industry
+benchmark; no published baseline for Claude Code efficiency exists. They come
+from two different places, and only one of them is solid:
+
+**Derived from published pricing (trustworthy):**
+- The **2.11× break-even** for cache amortization is arithmetic from the
+  published cache multipliers — 2× to write, 0.1× to read. It isn't a matter of
+  opinion, and it's why the amortization red band sits below 2×.
+- The relative ordering of the four lanes (cacheRead ≪ input < cacheCreation ≪
+  output) is likewise just the price table.
+
+**My judgement, calibrated on a small sample (treat as provisional):**
+- The 5× / 10× "healthy" and "excellent" amortization bands.
+- Cache-write cost share 30% / 50%.
+- Generation intensity 3% / 5%.
+- Uncached input 1% / 5%.
+
+Those four came from reasoning about the price ratios plus **a handful of
+sessions on one machine** — not a population. They're a starting point, not a
+verdict. If your work is legitimately generation-heavy, a "red" generation
+intensity may be perfectly correct for you.
+
+**The benchmark that actually matters is your own history.** After a few weeks,
+compare today against your own rolling median rather than my bands, and adjust
+the thresholds in the panel JSON to match how you actually work. A number
+drifting away from *your* normal is the real signal; a number outside *my*
+guess is only a prompt to look.
+
 ### Summary: what to maximize and minimize
 
 | metric | direction | why |
 | --- | --- | --- |
 | `cacheRead` | **maximize** (as a share of tokens) | Cheapest lane, 0.1×. High share = context reuse working. |
 | `cacheRead / cacheCreation` | **maximize**, keep > 5× | Cache amortization. The headline efficiency number. |
-| `cacheCreation` share of **cost** | **minimize**, keep < 30–40% | Paying to build context you don't reuse enough. |
+| `cacheCreation` share of **cost** | **minimize**, keep < 30–40% | Paying to build context you don't reuse enough. Writes are 2× input, the priciest lane after output. |
 | `output` | **minimize** for a given amount of work | 5× price. Includes thinking tokens. |
 | `input` | **minimize**, should be ~0 | Non-zero means cache isn't covering your context. |
 

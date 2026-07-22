@@ -13,15 +13,18 @@
 #
 # Rates are USD per token (published per-MTok price / 1e6):
 #
-#   | model       | input | output | cacheCreation (1.25x in) | cacheRead (0.1x in) |
-#   | ----------- | ----- | ------ | ------------------------ | ------------------- |
-#   | Opus 4.8    | $5    | $25    | $6.25                    | $0.50               |
-#   | Sonnet 5    | $3    | $15    | $3.75                    | $0.30               |
-#   | Haiku 4.5   | $1    | $5     | $1.25                    | $0.10               |
+#   | model       | input | output | cacheCreation (2x in) | cacheRead (0.1x in) |
+#   | ----------- | ----- | ------ | --------------------- | ------------------- |
+#   | Opus 4.8    | $5    | $25    | $10.00                | $0.50               |
+#   | Sonnet 5    | $3    | $15    | $6.00                 | $0.30               |
+#   | Haiku 4.5   | $1    | $5     | $2.00                 | $0.10               |
 #
-# Cache multipliers are the 5-minute-TTL rates. Claude Code doesn't expose which
-# TTL it used; a 1h-TTL write is 2x input, not 1.25x, so cacheCreation cost is a
-# floor rather than an exact figure.
+# The cache-write multiplier is 2x, the 1-HOUR TTL rate (the 5-minute rate is
+# 1.25x). Verified against local transcripts: 4,196,742 of 4,196,742 cache
+# creation tokens across 1,262 messages were `ephemeral_1h_input_tokens`, and
+# zero were 5m. Re-check with:
+#
+#   jq -r '.message.usage.cache_creation | select(.)' ~/.claude/projects/*/*.jsonl
 #
 # NOTE: this is API-equivalent pricing. On a subscription it is NOT your bill —
 # use it to compare sessions/projects, not to predict a charge.
@@ -42,7 +45,7 @@ groups:
           or
             claude_code_token_usage{model=~"claude-opus.*",   type="output"}        * 25e-6
           or
-            claude_code_token_usage{model=~"claude-opus.*",   type="cacheCreation"} * 6.25e-6
+            claude_code_token_usage{model=~"claude-opus.*",   type="cacheCreation"} * 10e-6
           or
             claude_code_token_usage{model=~"claude-opus.*",   type="cacheRead"}     * 0.5e-6
           or
@@ -51,7 +54,7 @@ groups:
           or
             claude_code_token_usage{model=~"claude-sonnet.*", type="output"}        * 15e-6
           or
-            claude_code_token_usage{model=~"claude-sonnet.*", type="cacheCreation"} * 3.75e-6
+            claude_code_token_usage{model=~"claude-sonnet.*", type="cacheCreation"} * 6e-6
           or
             claude_code_token_usage{model=~"claude-sonnet.*", type="cacheRead"}     * 0.3e-6
           or
@@ -60,6 +63,6 @@ groups:
           or
             claude_code_token_usage{model=~"claude-haiku.*",  type="output"}        * 5e-6
           or
-            claude_code_token_usage{model=~"claude-haiku.*",  type="cacheCreation"} * 1.25e-6
+            claude_code_token_usage{model=~"claude-haiku.*",  type="cacheCreation"} * 2e-6
           or
             claude_code_token_usage{model=~"claude-haiku.*",  type="cacheRead"}     * 0.1e-6

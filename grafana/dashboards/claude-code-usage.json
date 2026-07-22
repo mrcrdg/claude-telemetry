@@ -15,7 +15,32 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "links": [],
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "doc",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": true,
+      "title": "How to read this dashboard",
+      "tooltip": "Metric meanings, target ranges, and what to do when a number drifts",
+      "type": "link",
+      "url": "https://github.com/mrcrdg/claude-telemetry/blob/main/docs/METRICS-GUIDE.md"
+    },
+    {
+      "asDropdown": false,
+      "icon": "info",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": true,
+      "title": "Repo",
+      "tooltip": "claude-telemetry on GitHub",
+      "type": "link",
+      "url": "https://github.com/mrcrdg/claude-telemetry"
+    }
+  ],
   "liveNow": false,
   "refresh": "30s",
   "schemaVersion": 39,
@@ -86,7 +111,7 @@
   "timezone": "browser",
   "title": "Claude Code — Token Usage",
   "uid": "claude-code-usage",
-  "version": 3,
+  "version": 4,
   "weekStart": "",
   "panels": [
     {
@@ -250,12 +275,12 @@
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
       "id": 104,
       "panels": [],
-      "title": "Efficiency scorecard — is my usage healthy?",
+      "title": "Efficiency scorecard  ·  where the money goes",
       "type": "row"
     },
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "cacheRead / cacheCreation — how many times you reused what you paid to cache. THE headline efficiency number. Caching breaks even at ~1.3x, so anything above that is already winning. Under 1x you are paying to build context you never reuse — almost always too many short sessions. Target >5x; interactive sessions typically reach 10-12x, one-shot `claude -p` runs only 3-5x. Raise it with `claude --continue` instead of starting fresh.",
+      "description": "cacheRead / cacheCreation — how many times you reused what you paid to cache. THE headline efficiency number. Caching breaks even at ~2.1x (cache writes cost 2x input at the 1h TTL Claude Code uses), so anything above that is already winning. Under 1x you are paying to build context you never reuse — almost always too many short sessions. Target >5x; interactive sessions typically reach 10-12x, one-shot `claude -p` runs only 3-5x. Raise it with `claude --continue` instead of starting fresh.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -265,7 +290,7 @@
             "mode": "absolute",
             "steps": [
               { "color": "red", "value": null },
-              { "color": "orange", "value": 1 },
+              { "color": "orange", "value": 2 },
               { "color": "yellow", "value": 5 },
               { "color": "green", "value": 10 }
             ]
@@ -274,10 +299,10 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 6, "w": 4, "x": 0, "y": 6 },
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 6 },
       "id": 17,
       "options": {
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
@@ -302,7 +327,7 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "Share of spend going to WRITING the cache. Cache writes cost 1.25x input, reads 0.1x — a 12.5x spread — so writes dominate the bill even at a small share of tokens. Do NOT try to drive this to zero: writes are the cost of admission, and no writes means no cheap reads. Under ~30% is healthy; over 50% means sessions are dying before they amortize.",
+      "description": "Share of spend going to WRITING the cache. Cache writes cost 2x input (1h TTL), reads 0.1x — a 20x spread — so writes dominate the bill even at a small share of tokens. Do NOT try to drive this to zero: writes are the cost of admission, and no writes means no cheap reads. Under ~30% is healthy; over 50% means sessions are dying before they amortize.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -320,10 +345,10 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 6, "w": 4, "x": 4, "y": 6 },
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 6 },
       "id": 13,
       "options": {
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
@@ -366,10 +391,10 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 6, "w": 4, "x": 8, "y": 6 },
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 6 },
       "id": 18,
       "options": {
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
@@ -412,10 +437,10 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 6, "w": 4, "x": 12, "y": 6 },
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 10 },
       "id": 19,
       "options": {
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
@@ -451,10 +476,10 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 6, "w": 4, "x": 16, "y": 6 },
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 10 },
       "id": 15,
       "options": {
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
@@ -490,10 +515,10 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 6, "w": 4, "x": 20, "y": 6 },
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 10 },
       "id": 16,
       "options": {
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
@@ -517,14 +542,6 @@
       "type": "stat"
     },
     {
-      "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 12 },
-      "id": 105,
-      "panels": [],
-      "title": "Where the money goes — token share vs cost share",
-      "type": "row"
-    },
-    {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "What your tokens are made of. Compare against the cost pie to its right — the two look nothing alike, and the cost one is the one that matters. cacheRead dominates tokens because it's the cheap lane.",
       "fieldConfig": {
@@ -535,7 +552,7 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 13 },
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 6 },
       "id": 6,
       "options": {
         "displayLabels": ["percent"],
@@ -576,7 +593,7 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 13 },
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 6 },
       "id": 20,
       "options": {
         "displayLabels": ["percent"],
@@ -617,7 +634,7 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 13 },
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 15 },
       "id": 14,
       "options": {
         "displayMode": "gradient",
@@ -685,7 +702,7 @@
                   "mode": "absolute",
                   "steps": [
                     { "color": "red", "value": null },
-                    { "color": "orange", "value": 1 },
+                    { "color": "orange", "value": 2 },
                     { "color": "yellow", "value": 5 },
                     { "color": "green", "value": 10 }
                   ]
@@ -786,32 +803,6 @@
         }
       ],
       "type": "table"
-    },
-    {
-      "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 30 },
-      "id": 107,
-      "panels": [],
-      "title": "How to read this dashboard",
-      "type": "row"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "gridPos": { "h": 15, "w": 24, "x": 0, "y": 31 },
-      "id": 22,
-      "options": {
-        "code": {
-          "language": "plaintext",
-          "showLineNumbers": false,
-          "showMiniMap": false
-        },
-        "content": "## The four token types — and why price changes everything\n\nEvery number here is built from four token types. They do the same job but cost\nwildly different amounts, so **token share and cost share never match**.\n\n| type | what it is | price vs `input` | Opus 4.8 |\n|---|---|---|---|\n| `cacheRead` | context replayed from cache | **0.1x** | $0.50 /MTok |\n| `input` | fresh tokens the cache didn't cover | 1x | $5 /MTok |\n| `cacheCreation` | context written into the cache | **1.25x** | $6.25 /MTok |\n| `output` | tokens generated — **thinking counts here** | **5x** | $25 /MTok |\n\nOne `output` token costs **50x** one `cacheRead` token. That's why the two pies\nabove look nothing alike, and why the cost pie is the one to read.\n\n## Targets\n\n| number | aim for | bad sign |\n|---|---|---|\n| **Cache amortization** | **> 5x**, ideally 10x+ | **< 1x** — paying for cache you never reuse |\n| **Cache write % of cost** | < 30% | > 50% — sessions dying before they amortize |\n| **Generation intensity** | 1–3% | > 5% — heavy generation or high-effort thinking |\n| **Uncached input** | < 1% | > 5% — something is defeating the prefix cache |\n\n**Don't drive `cacheCreation` to zero.** Writes are the cost of admission: no\nwrites means no cheap reads and a *bigger* bill. Caching breaks even after ~1.3\nreuses, so the goal is a high read/write ratio — not a low write count.\n\n## If a number goes the wrong way\n\n**Cache write % climbing** — ranked by impact:\n1. **Too many short sessions.** Each fresh session rebuilds the cache. Use\n   `claude --continue` instead of starting over. *Biggest lever.*\n2. **Long idle gaps.** The cache expires; the next turn re-writes the prefix.\n3. **Context churn.** Cache is a *prefix* match — changing something early\n   invalidates everything after it.\n4. **Model switching mid-task.** Caches are per-model.\n\n**Generation intensity climbing** — lower effort where the task doesn't need it;\nmake targeted edits instead of whole-file rewrites; stop asking for recaps you\nwon't read.\n\n**Cost per session climbing** — check it against session count. Fewer, longer\nsessions *should* raise it. Only worry if total cost rises too.\n\n## What this dashboard can't tell you\n\n**Your plan usage / rate limits are not here and can't be.** Claude Code exports\nno quota, limit, or plan-tier data — not as a metric, not as an event, and it\nisn't persisted in transcripts or any local file. `/usage` queries Anthropic\nlive and never stores the result, so there's nothing to scrape.\n\nUse **`/usage` in Claude Code** for \"how much runway is left\" — it's live and\nauthoritative. Use **this dashboard** for \"what is burning it\". Improving the\nfour ratios above is what makes the runway last longer.\n\nPrices are **API-equivalent** — on a subscription this is not your bill, it's a\nconsistent yardstick for comparing sessions and habits. Full detail:\n`docs/METRICS-GUIDE.md`.",
-        "mode": "markdown"
-      },
-      "pluginVersion": "11.4.0",
-      "title": "How to read this dashboard",
-      "transparent": false,
-      "type": "text"
     },
     {
       "collapsed": false,

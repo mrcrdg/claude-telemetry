@@ -70,8 +70,9 @@ Claude Code ──OTLP gRPC :4317──▶ OTel Collector ──:8889──▶ P
 **Efficiency scorecard** — six colour-coded tiles that say whether a number is
 good or bad, not just what it is:
 - *Cache amortization* (`cacheRead/cacheCreation`) — the headline number. Green
-  above 10x, red below 1x.
-- *Cache write % of cost* — green under 30%, red over 50%.
+  above 10x, red below 2x (the arithmetic break-even).
+- *Cache write % of cost* — green under 30%, red over 50%. Writes cost 2x
+  input (Claude Code uses the 1-hour cache TTL); reads cost 0.1x.
 - *Generation intensity* (`output/cacheRead`) — green under 3%.
 - *Uncached input* — green under 1%; higher means the prefix cache is being
   defeated.
@@ -84,10 +85,10 @@ single most important thing to understand about these metrics.
 **Per-session efficiency** — one row per session with its amortization ratio,
 so you can see which working styles were efficient.
 
-**How to read this dashboard** — an on-dashboard text panel with the price
-table, target ranges, and what to do when a number moves the wrong way. The
-dashboard is meant to be readable without leaving Grafana; the deeper writeup
-is in **[docs/METRICS-GUIDE.md](docs/METRICS-GUIDE.md)**.
+Panel descriptions (hover the ⓘ) carry each metric's target range and what to
+do when it drifts. The full writeup — price table, ratio derivations, threshold
+provenance — is linked from the dashboard header and lives in
+**[docs/METRICS-GUIDE.md](docs/METRICS-GUIDE.md)**.
 
 **Tokens**
 - *Tokens over time by type* — stacked series for `input`, `output`,
