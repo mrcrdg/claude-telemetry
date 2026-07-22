@@ -112,6 +112,12 @@ false` so there's no `_total`/unit suffix mangling):
 
   Only data captured *after* tagging carries the label; older series keep an
   empty `project`, and the dashboard's "All" selection still includes them.
+- **No latency metric exists.** Per-request duration (the "15s" the CLI shows
+  while working) lives in the `claude_code.api_request` *event*, not in any
+  metric — and events need a log store, which this stack doesn't run.
+  `active_time_total{type="cli"}` is the nearest metric-side proxy, but it's an
+  aggregate rather than a per-request timing. See
+  [docs/FUTURE-IMPROVEMENTS.md](docs/FUTURE-IMPROVEMENTS.md).
 
 **Temporality:** Claude Code exports **delta** temporality by default, but this
 stack forces **cumulative** via `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE=cumulative`
@@ -136,6 +142,18 @@ docker compose down -v
 ```bash
 source ./claude-env.sh --unset
 ```
+
+**Add an already-running session to telemetry** — you can't. Claude Code reads
+the OTel env vars once at startup, so a session launched without them exports
+nothing and can't be switched on mid-flight. Restart it, keeping the
+conversation:
+```bash
+# in that terminal: exit Claude, then
+source /path/to/claude-telemetry/claude-env.sh
+claude --continue    # resumes the most recent conversation in this directory
+```
+Only usage from the restart onward is recorded — tokens already spent were
+never exported and can't be recovered.
 
 **Confirm the collector is receiving data** — raw metrics should show up here
 once Claude Code has exported at least once:
