@@ -283,7 +283,7 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "cacheRead / cacheCreation — how many times you reused what you paid to cache. THE headline efficiency number. Red below 2x is arithmetic: cache writes cost 2x input at the 1h TTL Claude Code uses, so below ~2.1 reuses caching costs more than sending fresh. The yellow/green bands are YOUR baseline, not an industry norm — from 14 sessions: p25 9x, median 15x, p75 28x. Recalibrate as you accumulate more. Raise it with `claude --continue` instead of a fresh session.",
+      "description": "cacheRead / cacheCreation — how many times you reused what you paid to cache. THE headline efficiency number. Red below 2x is arithmetic: cache writes cost 2x input at the 1h TTL Claude Code uses, so below ~2.1 reuses caching costs more than sending fresh. The yellow/green bands are YOUR baseline, not an industry norm — fitted to the percentiles of your own sessions, so they move as you work. Re-fit them with scripts/recalibrate-thresholds.py. Raise it with `claude --continue` instead of a fresh session.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -376,7 +376,7 @@
     },
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "description": "output / cacheRead. Output is the priciest lane at 5x input (50x a cache read), and extended thinking is billed as output. Bands are YOUR baseline from 14 sessions: median 1.0%, p75 2.0%, max 12.5%. Above ~2% means generation-heavy work — justified for writing code, less so for reading. Lower it with reduced effort and targeted edits over whole-file rewrites.",
+      "description": "output / cacheRead. Output is the priciest lane at 5x input (50x a cache read), and extended thinking is billed as output. The yellow band sits at your own p75, so it moves as you work — re-fit with scripts/recalibrate-thresholds.py. Above it means generation-heavy work — justified for writing code, less so for reading. Lower it with reduced effort and targeted edits over whole-file rewrites.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },

@@ -162,23 +162,27 @@ output) is likewise just the price table.
 warning comes from SigNoz. It's a real external reference, but it's one vendor's
 guidance, not a standard — and as noted above it doesn't discriminate here.
 
-**3. This machine's own baseline (what the green/yellow bands actually are).**
-Measured across 14 recovered sessions:
+**3. Your own baseline (what the green/yellow bands actually are).**
+Amortization's yellow sits at your p25 and green at your median; generation
+intensity's yellow sits at your p75. So "green" means *at or better than how
+you normally work* — not that you've hit an external standard.
 
-| | min | p25 | median | p75 | max |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| amortization | 2.3× | 9.1× | **14.6×** | 27.8× | 73.8× |
-| generation intensity | — | — | **1.00%** | 1.97% | 12.52% |
+**These move.** Between 14 and 20 sessions the amortization p25 went 9.1× →
+5.1× and the median 14.6× → 12.0×, which is enough to change what counts as
+"green". Don't hardcode them anywhere, including in your head:
 
-The bands are set from those percentiles: amortization yellow at p25 (9×) and
-green at the median (15×); generation intensity yellow at p75 (2%). So "green"
-means *at or better than how you normally work* — not that you've hit some
-external standard.
+```bash
+python3 scripts/recalibrate-thresholds.py --dry-run   # show the current fit
+python3 scripts/recalibrate-thresholds.py             # write it to the dashboard
+```
+
+The one band that is *not* refitted is amortization's red boundary at 2×. That
+comes from the pricing arithmetic, not from you.
 
 **Every source found says the same thing:** establish your own baseline over
 two to four weeks and alert on drift from it, rather than trusting absolute
-targets. Re-run the percentile query as your history grows and move the bands.
-There is no published "correct" number to reach for.
+targets. There is no published "correct" number to reach for — which is why
+the bands are a script, not a constant.
 
 ### Summary: what to maximize and minimize
 
