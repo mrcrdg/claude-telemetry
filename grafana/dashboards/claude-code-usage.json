@@ -64,7 +64,8 @@
         "refresh": 1,
         "regex": "",
         "sort": 1,
-        "type": "query"
+        "type": "query",
+        "allValue": ".*"
       },
       {
         "current": { "selected": false, "text": "All", "value": "$__all" },
@@ -83,7 +84,8 @@
         "refresh": 1,
         "regex": "",
         "sort": 1,
-        "type": "query"
+        "type": "query",
+        "allValue": ".*"
       },
       {
         "current": { "selected": false, "text": "All", "value": "$__all" },
@@ -102,7 +104,8 @@
         "refresh": 1,
         "regex": "",
         "sort": 1,
-        "type": "query"
+        "type": "query",
+        "allValue": ".*"
       }
     ]
   },
@@ -111,7 +114,7 @@
   "timezone": "browser",
   "title": "Claude Code — Token Usage",
   "uid": "claude-code-usage",
-  "version": 6,
+  "version": 7,
   "weekStart": "",
   "panels": [
     {
