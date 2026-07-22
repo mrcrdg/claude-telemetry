@@ -114,7 +114,7 @@
   "timezone": "browser",
   "title": "Claude Code — Token Usage",
   "uid": "claude-code-usage",
-  "version": 10,
+  "version": 11,
   "weekStart": "",
   "panels": [
     {
@@ -1697,6 +1697,146 @@
       ],
       "title": "API errors",
       "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 116 },
+      "id": 111,
+      "panels": [],
+      "title": "Engagement & environment",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "description": "Prompts per session — interaction depth. A session with many prompts is one where you kept working in the same context; lots of 1-prompt sessions means fragmentation, which is what drives cache-write cost. From events, so live sessions only.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "mappings": [],
+          "noValue": "No events yet",
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 7, "w": 10, "x": 0, "y": 117 },
+      "id": 35,
+      "options": {
+        "displayMode": "gradient",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "loki" },
+          "queryType": "range",
+          "refId": "A",
+          "legendFormat": "{{session_id}}",
+          "expr": "topk(10, sum by (session_id) (count_over_time({service_name=\"claude-code\"} | event_name=\"user_prompt\" [$__range])))"
+        }
+      ],
+      "title": "Prompts per session (interaction depth)",
+      "type": "bargauge"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "description": "Share of API calls that did not error. Retries are invisible in the metrics but each one costs a full request — a dip here means tokens spent on work that had to be redone. From events, so live sessions only.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "decimals": 2,
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "noValue": "No requests yet",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 98 },
+              { "color": "green", "value": 99.5 }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 7, "w": 6, "x": 10, "y": 117 },
+      "id": 36,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "loki" },
+          "queryType": "range",
+          "refId": "A",
+          "legendFormat": "success",
+          "expr": "(1 - (sum(count_over_time({service_name=\"claude-code\"} | event_name=\"api_error\" [$__range])) or vector(0)) / sum(count_over_time({service_name=\"claude-code\"} | event_name=\"api_request\" [$__range]))) * 100"
+        }
+      ],
+      "title": "API success rate",
+      "type": "gauge"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "description": "Where Claude Code is being run from — terminal emulator, VS Code, tmux. Counts only sessions that carry a terminal_type label, i.e. live telemetry; sessions recovered from transcripts have no environment recorded and are excluded. Useful mainly to confirm a new environment is reporting.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "hideFrom": { "legend": false, "tooltip": false, "viz": false } },
+          "mappings": [],
+          "noValue": "No data",
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 7, "w": 8, "x": 16, "y": 117 },
+      "id": 37,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "values": ["value", "percent"]
+        },
+        "pieType": "donut",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "sort": "desc",
+        "tooltip": { "mode": "single", "sort": "none" }
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "editorMode": "code",
+          "instant": true,
+          "range": false,
+          "refId": "A",
+          "legendFormat": "{{terminal_type}}",
+          "expr": "count by (terminal_type) (count by (terminal_type, session_id) (max_over_time(claude_code_token_usage{terminal_type!=\"\", project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range])))"
+        }
+      ],
+      "title": "Sessions by environment",
+      "type": "piechart"
     }
   ]
 }

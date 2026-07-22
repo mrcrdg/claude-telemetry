@@ -23,6 +23,9 @@ pipeline · **D** not applicable solo.
 | Am I close to a rate limit? | *Rolling 5h token usage* | Shape only, not a percentage. `/usage` in Claude Code is authoritative. |
 | Which sessions were efficient? | *Per-session efficiency* | Amortization per session; scan for outliers. |
 | Where does my money actually go? | *COST share by type* vs *TOKEN share by type* | The two never match — that's the point. |
+| How deep are my sessions? | *Prompts per session* | Interaction depth. Many 1-prompt sessions = fragmentation, which drives cache-write cost. Live sessions only. |
+| Are requests succeeding? | *API success rate* | Retries are invisible in metrics; each costs a full request. Live sessions only. |
+| Which environment am I running in? | *Sessions by environment* | terminal / VS Code / tmux. Excludes recovered sessions — transcripts record no environment. |
 
 > All costs are **API-equivalent**: what the same work would cost pay-as-you-go.
 > On a subscription your marginal cost is zero. Use these to compare projects,
@@ -74,6 +77,7 @@ sessions contribute nothing.
 | How many engineers are active? | n = 1 | — |
 | Total spend per user | = your total | *Cost by project* |
 | Requests per user | `user.email` / `user.id` dropped at scrape as PII | *Cost by project* |
+| Who are the power users? | n = 1 | *Prompts per session* shows depth instead |
 
 ---
 
