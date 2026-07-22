@@ -95,7 +95,10 @@ against the SigNoz reference setup.
 **[docs/OPTIMIZATION-PLAYBOOK.md](docs/OPTIMIZATION-PLAYBOOK.md)** turns the
 metrics into ranked actions — what to change first to spend less.
 **[docs/WHAT-CAN-I-ASK.md](docs/WHAT-CAN-I-ASK.md)** maps common monitoring
-questions to the panel that answers them.
+questions to the panel that answers them, and
+**[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** explains how the pipeline is
+put together — ingestion, storage, the recording-rule layer, and the batch
+backfill path.
 
 **Tokens**
 - *Tokens over time by type* — stacked series for `input`, `output`,
