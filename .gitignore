@@ -2,6 +2,10 @@
 .env
 *.local
 
+# Python bytecode — the backfill script leaves these behind
+__pycache__/
+*.py[cod]
+
 # Editor / OS cruft
 .DS_Store
 .idea/
