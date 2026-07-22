@@ -26,10 +26,24 @@ Usage:
 
 Safety: samples newer than --cutoff-hours (default 3) are skipped. Blocks that
 overlap Prometheus's in-memory head cause the head to be truncated on restart,
-which destroys recent samples that hadn't been flushed yet. Don't lower this
-unless Prometheus is stopped and you know what the head covers.
+which destroys recent samples that hadn't been flushed to disk yet.
+
+Lowering the cutoff to pick up recent work therefore costs you whatever is
+still only in the WAL — in practice the newest one or two sessions. Two things
+make that acceptable:
+
+  1. Back up the volume first, so the trade is reversible:
+       docker run --rm -v claude-telemetry_prometheus-data:/data \
+         -v "$PWD":/backup alpine tar czf /backup/prom.tgz -C /data .
+  2. Re-run this script afterwards. Transcripts are the source of truth, so a
+     second pass re-imports whatever the first pass dropped. Each round the
+     dropped set shrinks, so it converges.
+
+Emitted values are cumulative rather than deltas, which is what makes re-runs
+safe: rewriting a sample Prometheus already has restates the same total instead
+of adding to it.
 """
-import argparse, glob, json, os, sys, time, urllib.request
+import argparse, glob, json, os, sys, time, urllib.parse, urllib.request
 from collections import defaultdict
 
 # USD per token. Must match prometheus/rules/claude-cost.yml — recording rules
@@ -61,19 +75,43 @@ def sanitize(name):
     return "".join(c if (c.isalnum() or c in "._-") else "_" for c in name)
 
 
-def existing_sessions(prom_url):
-    """Session IDs Prometheus already has, so we never double-count."""
+def existing_watermarks(prom_url):
+    """Latest sample timestamp Prometheus already holds, per session.
+
+    Per-SESSION dedupe would be wrong: a session partially imported by an
+    earlier run could never be topped up, because its id already exists. We
+    instead record how far each session got, and later emit only samples past
+    that point. Cumulative totals are still computed from the session's first
+    message, so the counter continues from the stored value rather than
+    restarting at zero.
+    """
+    # An instant query only sees the last few minutes, so finished sessions
+    # would report no watermark and be re-imported wholesale. Walk a range
+    # instead and take each session's last populated step.
+    #
+    # Step granularity makes this approximate, which is safe in one direction
+    # only -- and it is the safe one. Emitted values are CUMULATIVE, so
+    # re-sending a sample Prometheus already has just rewrites the same total;
+    # it cannot double-count the way re-sending a delta would. Missing data is
+    # the real failure, so round the watermark down.
+    step = 300
+    end = int(time.time())
+    start = end - 30 * 86400
+    q = "max by (session_id) (claude_code_token_usage)"
+    url = (f"{prom_url}/api/v1/query_range?query={urllib.parse.quote(q)}"
+           f"&start={start}&end={end}&step={step}")
     try:
-        url = f"{prom_url}/api/v1/label/session_id/values"
-        with urllib.request.urlopen(url, timeout=10) as r:
-            return set(json.load(r).get("data") or [])
+        with urllib.request.urlopen(url, timeout=30) as r:
+            res = json.load(r)["data"]["result"]
+        return {x["metric"]["session_id"]: max(v[0] for v in x["values"]) - step
+                for x in res if x.get("values")}
     except Exception as e:
         print(f"  ! could not reach Prometheus at {prom_url} ({e});"
               f" proceeding without dedupe", file=sys.stderr)
-        return set()
+        return {}
 
 
-def collect(transcript_glob, cutoff_ts, skip_sessions):
+def collect(transcript_glob, cutoff_ts, watermarks):
     """-> samples[(metric, labels_tuple)] = [(ts, cumulative_value), ...]"""
     per_series = defaultdict(list)          # (session, project, model, type) -> [(ts, delta)]
     stats = defaultdict(int)
@@ -93,9 +131,6 @@ def collect(transcript_glob, cutoff_ts, skip_sessions):
             if not sid or not rates_for(model):
                 stats["skipped_no_model_or_session"] += 1
                 continue
-            if sid in skip_sessions:
-                stats["skipped_already_in_prometheus"] += 1
-                continue
             ts_iso = rec.get("timestamp")
             if not ts_iso:
                 continue
@@ -106,23 +141,36 @@ def collect(transcript_glob, cutoff_ts, skip_sessions):
             if ts > cutoff_ts:
                 stats["skipped_too_recent"] += 1
                 continue
+            # Kept for cumulative accounting even when already stored; the
+            # emit step drops anything at or before the watermark.
+            already = ts <= watermarks.get(sid, -1)
+            if already:
+                stats["already_in_prometheus"] += 1
             project = sanitize(os.path.basename(rec.get("cwd") or "")) or ""
             for field, type_ in USAGE_FIELDS.items():
                 v = usage.get(field) or 0
                 if v:
-                    per_series[(sid, project, model, type_)].append((ts, v))
-                    stats["samples"] += 1
+                    per_series[(sid, project, model, type_)].append((ts, v, already))
+                    if not already:
+                        stats["samples"] += 1
     return per_series, stats
 
 
 def to_openmetrics(per_series):
-    """Counters are cumulative per session, so accumulate deltas in time order."""
+    """Counters are cumulative per session, so accumulate deltas in time order.
+
+    Samples already in Prometheus still advance the running total — they are
+    just not re-emitted — so an appended sample carries the correct cumulative
+    value instead of resetting the counter.
+    """
     rows = []
     for (sid, project, model, type_), points in per_series.items():
         rate = rates_for(model)[type_]
         running = 0.0
-        for ts, delta in sorted(points):
+        for ts, delta, already in sorted(points):
             running += delta
+            if already:
+                continue
             labels = (f'session_id="{sid}",project="{project}",'
                       f'model="{model}",type="{type_}"')
             rows.append((ts, "claude_code_token_usage", labels, running))
@@ -147,31 +195,32 @@ def main():
     ap.add_argument("-o", "--output", default="/tmp/claude-backfill.om")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--no-dedupe", action="store_true",
-                    help="include sessions Prometheus already has (double-counts)")
+                    help="ignore watermarks and re-emit everything (double-counts)")
     args = ap.parse_args()
 
-    skip = set() if args.no_dedupe else existing_sessions(args.prometheus)
-    if skip:
-        print(f"  {len(skip)} session(s) already in Prometheus will be skipped")
+    marks = {} if args.no_dedupe else existing_watermarks(args.prometheus)
+    if marks:
+        print(f"  {len(marks)} session(s) already partly stored; only samples"
+              f" newer than each one's watermark will be written")
     cutoff = time.time() - args.cutoff_hours * 3600
 
-    per_series, stats = collect(args.transcripts, cutoff, skip)
+    per_series, stats = collect(args.transcripts, cutoff, marks)
     if not per_series:
         print("Nothing to backfill.")
         return 0
 
-    sessions = {k[0] for k in per_series}
+    sessions = {k[0] for k, pts in per_series.items() if any(not a for *_, a in pts)}
     projects = defaultdict(float)
     tokens = defaultdict(float)
     for (sid, project, model, type_), pts in per_series.items():
-        total = sum(v for _, v in pts)
+        total = sum(v for _, v, already in pts if not already)
         tokens[type_] += total
         projects[project] += total * rates_for(model)[type_]
 
     print(f"\n  messages scanned            {stats['messages']:>10,}")
     print(f"  samples to write            {stats['samples']:>10,}")
     print(f"  sessions recovered          {len(sessions):>10,}")
-    for k in ("skipped_already_in_prometheus", "skipped_too_recent",
+    for k in ("already_in_prometheus", "skipped_too_recent",
               "skipped_no_model_or_session"):
         if stats.get(k):
             print(f"  {k:<27} {stats[k]:>10,}")
