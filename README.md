@@ -61,18 +61,27 @@ Claude Code ──OTLP gRPC :4317──▶ OTel Collector ──:8889──▶ P
 
 **Overview** — total tokens, cost, sessions, active time (stat tiles).
 
-**Cost & efficiency**
-- *Cache write share of cost* — gauge. Cache writes cost 1.25× input, cache
-  reads 0.1× — a 12.5× spread, so writes dominate the bill even at a small
-  share of tokens. This is usually the biggest lever available.
-- *Cost by token type* — where the money actually goes, priced per type.
-- *Cost per session* and *Sessions (distinct)* — unit economics. Both count
-  distinct `session_id`s so the ratio is always internally consistent.
+**Efficiency scorecard** — six colour-coded tiles that say whether a number is
+good or bad, not just what it is:
+- *Cache amortization* (`cacheRead/cacheCreation`) — the headline number. Green
+  above 10x, red below 1x.
+- *Cache write % of cost* — green under 30%, red over 50%.
+- *Generation intensity* (`output/cacheRead`) — green under 3%.
+- *Uncached input* — green under 1%; higher means the prefix cache is being
+  defeated.
+- *Cost per session* and *Sessions (distinct)*.
 
-**→ [docs/METRICS-GUIDE.md](docs/METRICS-GUIDE.md)** explains what each token
-type means, the ratios worth watching (and their healthy ranges), what to do
-when one goes the wrong way, and why subscription plan limits can't appear
-here.
+**Where the money goes** — the token-share and cost-share pies side by side.
+They never match (cacheRead is ~90% of tokens but ~30% of cost), which is the
+single most important thing to understand about these metrics.
+
+**Per-session efficiency** — one row per session with its amortization ratio,
+so you can see which working styles were efficient.
+
+**How to read this dashboard** — an on-dashboard text panel with the price
+table, target ranges, and what to do when a number moves the wrong way. The
+dashboard is meant to be readable without leaving Grafana; the deeper writeup
+is in **[docs/METRICS-GUIDE.md](docs/METRICS-GUIDE.md)**.
 
 **Tokens** (lead)
 - *Tokens over time by type* — stacked series for `input`, `output`,
