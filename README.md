@@ -160,6 +160,19 @@ false` so there's no `_total`/unit suffix mangling):
   that overlap Prometheus's in-memory head cause it to be truncated on restart,
   destroying recent samples that hadn't been flushed to disk yet. Backfilling to
   `now` will silently lose the last hours of raw metrics.
+- **Missed sessions can be recovered.** A session launched without the OTel env
+  vars exports nothing, but its transcript under `~/.claude/projects/` still
+  records per-message token counts. `scripts/backfill-from-transcripts.py`
+  reconstructs them into Prometheus:
+
+  ```bash
+  python3 scripts/backfill-from-transcripts.py --dry-run   # preview
+  python3 scripts/backfill-from-transcripts.py -o /tmp/backfill.om
+  ```
+
+  It skips sessions Prometheus already has (no double-counting) and, by
+  default, anything newer than 3 hours — see the block-overlap warning above.
+  Loading instructions are in the script's docstring.
 - **No latency metric exists.** Per-request duration (the "15s" the CLI shows
   while working) lives in the `claude_code.api_request` *event*, not in any
   metric — and events need a log store, which this stack doesn't run.
