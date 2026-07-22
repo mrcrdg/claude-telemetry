@@ -22,6 +22,7 @@ Claude Code ──OTLP gRPC :4317──▶ OTel Collector ──:8889──▶ P
 | OTel Collector | 4317             | Receives OTLP/gRPC metrics from Claude Code |
 | OTel Collector | 8889             | Prometheus scrape endpoint                  |
 | Prometheus     | 9090             | Stores metrics (90-day retention)           |
+| Loki           | 3100             | Stores events (latency, tool results, errors) |
 | Grafana        | 3000             | Dashboards (admin / admin)                  |
 
 ## Quick start
@@ -93,6 +94,8 @@ provenance — is linked from the dashboard header and lives in
 against the SigNoz reference setup.
 **[docs/OPTIMIZATION-PLAYBOOK.md](docs/OPTIMIZATION-PLAYBOOK.md)** turns the
 metrics into ranked actions — what to change first to spend less.
+**[docs/WHAT-CAN-I-ASK.md](docs/WHAT-CAN-I-ASK.md)** maps common monitoring
+questions to the panel that answers them.
 
 **Tokens**
 - *Tokens over time by type* — stacked series for `input`, `output`,

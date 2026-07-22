@@ -11,11 +11,33 @@ receivers:
         endpoint: 0.0.0.0:4317
 
 processors:
+  # Events carry the same identifying attributes as metrics — user.email,
+  # user.id, account IDs, org ID — but the `labeldrop` rule in prometheus.yml
+  # only protects metrics. Logs go straight to Loki, so they must be scrubbed
+  # here or the address ends up in the log store as structured metadata.
+  attributes/scrub-pii:
+    actions:
+      - key: user.email
+        action: delete
+      - key: user.id
+        action: delete
+      - key: user.account_id
+        action: delete
+      - key: user.account_uuid
+        action: delete
+      - key: organization.id
+        action: delete
+
   batch:
     # Small local traffic — flush promptly so panels stay fresh.
     timeout: 10s
 
 exporters:
+  # Events (api_request, tool_result, api_error, ...) are OTLP logs. Prometheus
+  # stores metrics only, so they need their own store — hence Loki.
+  otlphttp/loki:
+    endpoint: http://loki:3100/otlp
+
   prometheus:
     endpoint: 0.0.0.0:8889
     # Keep metric names predictable: no unit/`_total` suffix mangling, so
@@ -42,3 +64,7 @@ service:
       receivers: [otlp]
       processors: [batch]
       exporters: [prometheus]
+    logs:
+      receivers: [otlp]
+      processors: [attributes/scrub-pii, batch]
+      exporters: [otlphttp/loki]

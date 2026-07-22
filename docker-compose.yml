@@ -47,6 +47,15 @@ services:
       - otel-collector
     restart: unless-stopped
 
+  loki:
+    image: grafana/loki:3.3.1
+    container_name: claude-loki
+    command: ["-config.file=/etc/loki/local-config.yaml"]
+    volumes:
+      - loki-data:/loki
+    ports:
+      - "127.0.0.1:3100:3100"
+
   grafana:
     image: grafana/grafana:11.4.0
     container_name: claude-grafana
@@ -68,5 +77,6 @@ services:
     restart: unless-stopped
 
 volumes:
+  loki-data:
   prometheus-data:
   grafana-data:

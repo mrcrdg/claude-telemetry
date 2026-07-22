@@ -114,7 +114,7 @@
   "timezone": "browser",
   "title": "Claude Code — Token Usage",
   "uid": "claude-code-usage",
-  "version": 8,
+  "version": 10,
   "weekStart": "",
   "panels": [
     {
@@ -1374,6 +1374,329 @@
       ],
       "title": "Tokens in the last 5h",
       "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 91 },
+      "id": 109,
+      "panels": [],
+      "title": "Edit decisions (quality signal)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "description": "Share of suggested edits you kept. The strongest quality signal available from metrics alone: a falling rate means the edits are landing wide of what you wanted. SigNoz suggests warning above 30% rejection, i.e. below 70% here. Covers EDIT tools only — Edit, Write and NotebookEdit. Read, Bash and Grep are not represented; those need the events pipeline. Shows 'No data' until an edit is accepted or rejected in a telemetry-enabled session.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "decimals": 1,
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "noValue": "No edits yet",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 70 },
+              { "color": "green", "value": 85 }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 7, "w": 6, "x": 0, "y": 92 },
+      "id": 26,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "editorMode": "code",
+          "instant": true,
+          "range": false,
+          "refId": "A",
+          "legendFormat": "accept rate",
+          "expr": "sum(max_over_time(claude_code_code_edit_tool_decision{decision=\"accept\", project=~\"$project\"}[$__range])) / sum(max_over_time(claude_code_code_edit_tool_decision{project=~\"$project\"}[$__range])) * 100"
+        }
+      ],
+      "title": "Edit acceptance rate",
+      "type": "gauge"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "description": "Accepted vs rejected, by the edit tool used. Covers EDIT tools only — Edit, Write and NotebookEdit. Read, Bash and Grep are not represented; those need the events pipeline. Shows 'No data' until an edit is accepted or rejected in a telemetry-enabled session.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "mappings": [],
+          "noValue": "No edits yet",
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 7, "w": 9, "x": 6, "y": 92 },
+      "id": 27,
+      "options": {
+        "displayMode": "gradient",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "editorMode": "code",
+          "instant": true,
+          "range": false,
+          "refId": "A",
+          "legendFormat": "{{tool_name}} · {{decision}}",
+          "expr": "sum by (tool_name, decision) (max_over_time(claude_code_code_edit_tool_decision{project=~\"$project\"}[$__range]))"
+        }
+      ],
+      "title": "Edit decisions by tool",
+      "type": "bargauge"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "description": "Which languages the edits land in, and whether they stick. A language with a poor accept rate is worth a closer prompt. Covers EDIT tools only — Edit, Write and NotebookEdit. Read, Bash and Grep are not represented; those need the events pipeline. Shows 'No data' until an edit is accepted or rejected in a telemetry-enabled session.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "hideFrom": { "legend": false, "tooltip": false, "viz": false } },
+          "mappings": [],
+          "noValue": "No edits yet"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 7, "w": 9, "x": 15, "y": 92 },
+      "id": 28,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "values": ["value", "percent"]
+        },
+        "pieType": "donut",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "sort": "desc",
+        "tooltip": { "mode": "single", "sort": "none" }
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "editorMode": "code",
+          "instant": true,
+          "range": false,
+          "refId": "A",
+          "legendFormat": "{{language}}",
+          "expr": "sum by (language) (max_over_time(claude_code_code_edit_tool_decision{project=~\"$project\"}[$__range]))"
+        }
+      ],
+      "title": "Edits by language",
+      "type": "piechart"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 99 },
+      "id": 110,
+      "panels": [],
+      "title": "Latency & reliability (events)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "description": "How long Claude takes per API call. p95 is what a slow turn feels like. There is no metric for this — duration_ms exists only on the api_request event. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill — transcripts carry no timing data.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "mappings": [],
+          "noValue": "No events yet",
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 100 },
+      "id": 30,
+      "options": {
+        "legend": {
+          "calcs": ["mean", "max"],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "loki" },
+          "expr": "quantile_over_time(0.95, {service_name=\"claude-code\"} | event_name=\"api_request\" | unwrap duration_ms [$__auto]) by (model)",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "API request latency (p50 / p95)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "description": "Which tools cost you wall-clock time. The lever for 'work gets easier' rather than 'work gets cheaper' — slow tools waste minutes, not tokens. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill — transcripts carry no timing data.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "mappings": [],
+          "noValue": "No events yet",
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 100 },
+      "id": 31,
+      "options": {
+        "legend": {
+          "calcs": ["mean", "max"],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "loki" },
+          "expr": "quantile_over_time(0.95, {service_name=\"claude-code\"} | event_name=\"tool_result\" | unwrap duration_ms [$__auto]) by (tool_name)",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Tool execution time (p95 by tool)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "description": "Call counts for EVERY tool — Read, Bash, Grep included. The code_edit_tool_decision metric only covers Edit/Write/NotebookEdit; this is the complete picture. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill — transcripts carry no timing data.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "mappings": [],
+          "noValue": "No events yet",
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 108 },
+      "id": 32,
+      "options": {
+        "legend": {
+          "calcs": ["mean", "max"],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "loki" },
+          "expr": "sum by (tool_name) (count_over_time({service_name=\"claude-code\"} | event_name=\"tool_result\" [$__auto]))",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Tool usage (all tools)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "description": "Share of tool executions that failed. A tool failing repeatedly means wasted turns — each retry costs a full context re-read. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill — transcripts carry no timing data.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "mappings": [],
+          "noValue": "No events yet",
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 108 },
+      "id": 33,
+      "options": {
+        "legend": {
+          "calcs": ["mean", "max"],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "loki" },
+          "expr": "sum(count_over_time({service_name=\"claude-code\"} | event_name=\"tool_result\" | success=\"false\" [$__auto])) / sum(count_over_time({service_name=\"claude-code\"} | event_name=\"tool_result\" [$__auto])) * 100",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Tool failure rate",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "description": "Failed API calls with status code. Retries are invisible in the metrics but show up here, and each one costs a full request. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill — transcripts carry no timing data.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "mappings": [],
+          "noValue": "No events yet",
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 108 },
+      "id": 34,
+      "options": {
+        "legend": {
+          "calcs": ["mean", "max"],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "loki" },
+          "expr": "sum by (status_code) (count_over_time({service_name=\"claude-code\"} | event_name=\"api_error\" [$__auto]))",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "API errors",
+      "type": "timeseries"
     }
   ]
 }
