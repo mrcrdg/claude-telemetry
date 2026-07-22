@@ -91,36 +91,32 @@ break-even at R ≈ 2.11
 **Caching pays for itself from the third turn onward.** After that every read
 is nearly pure savings — by R=12 you pay 3.1N instead of 12N.
 
-| ratio | reading |
-| --- | --- |
-| **< 2×** | Bad — below break-even. Caching is costing you more than sending fresh would. |
-| **2–5×** | Weak. Typical of very short one-shot sessions. |
-| **5–15×** | Healthy. Normal interactive work. |
-| **> 15×** | Excellent — a long session reusing a stable context. |
+| ratio | dashboard band | reading |
+| --- | --- | --- |
+| **< 2×** | red | Below break-even. Caching costs more than sending fresh would. *Arithmetic, not opinion.* |
+| **2–9×** | orange | Below your p25. Usually short sessions that died before amortizing. |
+| **9–15×** | yellow | Between your p25 and median. Ordinary. |
+| **> 15×** | green | At or above your median. |
 
-Real numbers from this setup:
+Measured across 14 sessions on this machine: min 2.3×, p25 9.1×, **median
+14.6×**, p75 27.8×, max 73.8×. Aggregate across all sessions: **30.5×**.
 
-| session | cacheRead | cacheCreation | ratio |
-| --- | ---: | ---: | ---: |
-| long interactive session | 1,229,574 | 101,453 | **12.1×** |
-| earlier interactive session | 107,889 | 10,347 | **10.4×** |
-| `claude -p` one-shot | 35,953 | 7,286 | 4.9× |
-| `claude -p` one-shot | 15,120 | 4,965 | 3.0× |
-
-The pattern is visible immediately: **interactive sessions amortize at ~2–4×
-the rate of one-shots.** Aim to stay above ~5×.
+The strongest pattern is session length: one-shot `claude -p` runs land at
+3–5×, while long interactive sessions reach 20–74×. Same work, very different
+cost — which is why `claude --continue` is the highest-leverage habit here.
 
 ### 3.2 `output / cacheRead` — generation intensity
 
 Output is the priciest lane (5×), so even a small ratio carries real cost.
 
-| ratio | reading |
-| --- | --- |
-| **< 1%** | Reading/analysis-heavy work. Cheap. |
-| **1–3%** | Normal mixed coding. |
-| **> 5%** | Generation-heavy — writing lots of code/prose, or thinking hard. Justify it or dial effort down. |
+| ratio | dashboard band | reading |
+| --- | --- | --- |
+| **< 2%** | green | At or below your p75. Reading/analysis-heavy or ordinary coding. |
+| **2–5%** | yellow | Generation-heavy. Fine when writing code, worth a look otherwise. |
+| **> 5%** | red | Well above your normal — check effort level and whole-file rewrites. |
 
-Observed here: 0.7% and 2.2%. Both fine.
+Measured across 14 sessions: median **1.00%**, p75 1.97%, max 12.52%.
+Aggregate: **1.09%**.
 
 ### 3.3 `input / total` — is caching even working?
 
