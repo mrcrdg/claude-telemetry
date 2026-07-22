@@ -91,6 +91,8 @@ provenance — is linked from the dashboard header and lives in
 **[docs/METRICS-GUIDE.md](docs/METRICS-GUIDE.md)**, and
 **[docs/SIGNOZ-COMPARISON.md](docs/SIGNOZ-COMPARISON.md)** compares this stack
 against the SigNoz reference setup.
+**[docs/OPTIMIZATION-PLAYBOOK.md](docs/OPTIMIZATION-PLAYBOOK.md)** turns the
+metrics into ranked actions — what to change first to spend less.
 
 **Tokens**
 - *Tokens over time by type* — stacked series for `input`, `output`,

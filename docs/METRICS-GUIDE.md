@@ -102,8 +102,14 @@ Measured across 14 sessions on this machine: min 2.3×, p25 9.1×, **median
 14.6×**, p75 27.8×, max 73.8×. Aggregate across all sessions: **30.5×**.
 
 The strongest pattern is session length: one-shot `claude -p` runs land at
-3–5×, while long interactive sessions reach 20–74×. Same work, very different
-cost — which is why `claude --continue` is the highest-leverage habit here.
+3–5×, while long interactive sessions reach 20–74×.
+
+> **But don't read that as "longer is always better".** Amortization only
+> covers cache *writes*, which are 19.6% of measured cost — cache *reads* are
+> 61.2%, and those scale with context size, which grows ~4.8× over a session.
+> The optimum is long enough to amortize the write, short enough to keep
+> context lean. See
+> **[OPTIMIZATION-PLAYBOOK.md](OPTIMIZATION-PLAYBOOK.md)**.
 
 ### 3.2 `output / cacheRead` — generation intensity
 
