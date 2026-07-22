@@ -83,10 +83,9 @@ table, target ranges, and what to do when a number moves the wrong way. The
 dashboard is meant to be readable without leaving Grafana; the deeper writeup
 is in **[docs/METRICS-GUIDE.md](docs/METRICS-GUIDE.md)**.
 
-**Tokens** (lead)
+**Tokens**
 - *Tokens over time by type* — stacked series for `input`, `output`,
   `cacheRead`, `cacheCreation`.
-- *Token share by type* — donut of the same split.
 
 **Cost & activity** (secondary)
 - *Cost over time by model* — stacked cost series per model.
