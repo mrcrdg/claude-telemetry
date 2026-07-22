@@ -175,3 +175,47 @@ The one genuinely unusual property: **the source of truth outlives the
 pipeline**. Transcripts sit on disk regardless of whether telemetry was
 running, so history is always replayable. Most pipelines can't recover what
 they didn't capture at the time.
+
+---
+
+## 8. What this is NOT
+
+The table above is a mapping of *ideas*, not of tooling. No Kafka, no dbt, no
+Airflow — and the analogies are looser than they look:
+
+| Concept | What a data platform uses | What's here | Where the analogy breaks |
+| --- | --- | --- | --- |
+| Message bus | Kafka / Pulsar / Kinesis | OTel Collector | The collector buffers in memory for ~10s and forwards. It is **not a durable log**: no partitions, no consumer groups, no offset replay, no retention. Stop the collector mid-session and those metrics are gone. |
+| Transformation | dbt | Prometheus recording rules | A rule is one expression on a timer. **No DAG, no `ref()`, no tests, no lineage, no docs, no dev/prod targets.** One "model", hand-written. |
+| Orchestration | Airflow / Dagster / Prefect | *nothing* | The backfill is run by hand. No schedule, no retries, no dependency graph, no failure alerting, no run history. Prometheus's rule evaluator is a timer, not an orchestrator. |
+| Data quality | dbt tests / Great Expectations | *nothing* | Correctness was checked by ad-hoc queries during development. Nothing runs on a schedule to catch drift. |
+| Warehouse | Snowflake / BigQuery / Delta | Prometheus TSDB + Loki | Purpose-built time-series stores. No SQL, no joins across sources, no schema evolution support — which is exactly why the thin-backfill-rows problem bit. |
+| Deployment | Kubernetes / Terraform | Docker Compose | Single node, no HA, no autoscaling, no secrets management. |
+
+### Is that the wrong call?
+
+For this workload, no. One user, one machine, ~250M tokens, ~100 MB on disk.
+Kafka would add a broker to buffer a stream that peaks at a few hundred samples
+a second. dbt would add a compiler for a single transformation.
+
+**What it costs:** the gaps are real, and two of them already bit —
+
+- **No durable buffer.** Collector down = data lost, permanently. Kafka's whole
+  point is that the producer can keep writing while the consumer is dead.
+  Mitigated here only by luck: transcripts happen to be a replayable source.
+- **No orchestration.** The backfill is a manual, multi-step, stateful
+  procedure with a known hazard (head-block overlap). That is precisely the
+  kind of job an orchestrator should own — with retries, a run log, and a
+  guard against concurrent runs.
+- **No tests.** The `query_source` schema-drift bug silently hid most of the
+  history and was found by eye. A single "row count by path should not diverge"
+  assertion would have caught it.
+
+### When you'd actually add them
+
+| Add | When |
+| --- | --- |
+| **Kafka** | More than one producer host, or losing data during a collector restart becomes unacceptable. |
+| **Airflow/Dagster** | The backfill needs to run on a schedule, or any second batch job appears. |
+| **dbt + a warehouse** | You want to join telemetry against something else — git history, ticket data, CI runs — which Prometheus cannot do. |
+| **Data tests** | Now, honestly. It's the cheapest of the four and would have caught a real bug. |
