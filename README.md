@@ -73,8 +73,12 @@ Claude Code ──OTLP gRPC :4317──▶ OTel Collector ──:8889──▶ P
 - *Sessions per day* — bar chart.
 - *Cost by model & source* — sortable table.
 
-Two template variables at the top — **Model** and **Query source** — filter the
-cost/activity panels.
+**By project**
+- *Cost over time by project* — stacked cost series per project.
+- *Tokens & cost by project* — sortable table.
+
+Three template variables at the top — **Project**, **Model** and **Query
+source** — filter every panel.
 
 ## Metrics reference
 
@@ -86,8 +90,8 @@ false` so there's no `_total`/unit suffix mangling):
 | ------------------------------ | ------- | ----------------------------------------------- |
 | `claude_code_token_usage`      | tokens  | `type` = input \| output \| cacheRead \| cacheCreation; also `model`, `query_source`, `speed`, `effort` |
 | `claude_code_cost_usage`       | USD     | `model`, `query_source`, `speed`, `effort`      |
-| `claude_code_session_count`    | count   | —                                               |
-| `claude_code_active_time_total`| seconds | —                                               |
+| `claude_code_session_count`    | count   | `start_type` = fresh \| resume \| continue \| agents_view |
+| `claude_code_active_time_total`| seconds | `type` = user \| cli                            |
 | `claude_code_lines_of_code_count` | count | `type` = added \| removed                       |
 | `claude_code_commit_count`     | count   | —                                               |
 | `claude_code_pull_request_count` | count | —                                               |
@@ -97,6 +101,17 @@ false` so there's no `_total`/unit suffix mangling):
 - `speed` (`fast`) and `effort` (`low`…`max`) are **conditional** — the
   attribute is omitted when it doesn't apply, so don't assume every series has
   them.
+- `project` is **not** emitted by Claude Code. Neither is cwd or git branch —
+  they're deliberately left out to avoid unbounded cardinality. `claude-env.sh`
+  adds it via `OTEL_RESOURCE_ATTRIBUTES=project=<dir name>`, which lands on
+  every metric as a data-point label. Override with `CLAUDE_TELEMETRY_PROJECT`:
+
+  ```bash
+  CLAUDE_TELEMETRY_PROJECT=my-app source ./claude-env.sh
+  ```
+
+  Only data captured *after* tagging carries the label; older series keep an
+  empty `project`, and the dashboard's "All" selection still includes them.
 
 **Temporality:** Claude Code exports **delta** temporality by default, but this
 stack forces **cumulative** via `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE=cumulative`

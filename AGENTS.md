@@ -88,8 +88,8 @@ curl -s http://localhost:8889/metrics | grep claude_code   # confirm metrics arr
 | --------------------------------- | ------- | ------------------------------------------------------ |
 | `claude_code_token_usage`         | tokens  | `type` (input/output/cacheRead/cacheCreation), `model`, `query_source`, `speed`, `effort` |
 | `claude_code_cost_usage`          | USD     | `model`, `query_source`, `speed`, `effort`             |
-| `claude_code_session_count`       | count   | —                                                      |
-| `claude_code_active_time_total`   | seconds | —                                                      |
+| `claude_code_session_count`       | count   | `start_type` (fresh/resume/continue/agents_view)       |
+| `claude_code_active_time_total`   | seconds | `type` (user/cli)                                      |
 | `claude_code_lines_of_code_count` | count   | `type` (added/removed)                                 |
 | `claude_code_commit_count`        | count   | —                                                      |
 | `claude_code_pull_request_count`  | count   | —                                                      |

@@ -25,6 +25,25 @@
       {
         "current": { "selected": false, "text": "All", "value": "$__all" },
         "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "definition": "label_values(claude_code_cost_usage, project)",
+        "includeAll": true,
+        "label": "Project",
+        "multi": true,
+        "name": "project",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(claude_code_cost_usage, project)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": { "selected": false, "text": "All", "value": "$__all" },
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
         "definition": "label_values(claude_code_cost_usage, model)",
         "includeAll": true,
         "label": "Model",
@@ -67,7 +86,7 @@
   "timezone": "browser",
   "title": "Claude Code — Token Usage",
   "uid": "claude-code-usage",
-  "version": 1,
+  "version": 2,
   "weekStart": "",
   "panels": [
     {
@@ -105,7 +124,7 @@
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "editorMode": "code",
-          "expr": "sum(increase(claude_code_token_usage{model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
+          "expr": "sum(increase(claude_code_token_usage{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
           "instant": true,
           "legendFormat": "tokens",
           "range": false,
@@ -142,7 +161,7 @@
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "editorMode": "code",
-          "expr": "sum(increase(claude_code_cost_usage{model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
+          "expr": "sum(increase(claude_code_cost_usage{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
           "instant": true,
           "legendFormat": "cost",
           "range": false,
@@ -179,7 +198,7 @@
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "editorMode": "code",
-          "expr": "sum(increase(claude_code_session_count[$__range]))",
+          "expr": "sum(increase(claude_code_session_count{project=~\"$project\"}[$__range]))",
           "instant": true,
           "legendFormat": "sessions",
           "range": false,
@@ -216,7 +235,7 @@
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "editorMode": "code",
-          "expr": "sum(increase(claude_code_active_time_total[$__range]))",
+          "expr": "sum(increase(claude_code_active_time_total{project=~\"$project\"}[$__range]))",
           "instant": true,
           "legendFormat": "active time",
           "range": false,
@@ -277,7 +296,7 @@
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "editorMode": "code",
-          "expr": "sum by (type) (increase(claude_code_token_usage{model=~\"$model\", query_source=~\"$query_source\"}[$__rate_interval]))",
+          "expr": "sum by (type) (increase(claude_code_token_usage{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__rate_interval]))",
           "legendFormat": "{{type}}",
           "range": true,
           "refId": "A"
@@ -311,7 +330,7 @@
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "editorMode": "code",
-          "expr": "sum by (type) (increase(claude_code_token_usage{model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
+          "expr": "sum by (type) (increase(claude_code_token_usage{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
           "instant": true,
           "legendFormat": "{{type}}",
           "range": false,
@@ -372,7 +391,7 @@
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "editorMode": "code",
-          "expr": "sum by (model) (increase(claude_code_cost_usage{model=~\"$model\", query_source=~\"$query_source\"}[$__rate_interval]))",
+          "expr": "sum by (model) (increase(claude_code_cost_usage{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__rate_interval]))",
           "legendFormat": "{{model}}",
           "range": true,
           "refId": "A"
@@ -406,7 +425,7 @@
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "editorMode": "code",
-          "expr": "sum by (query_source) (increase(claude_code_cost_usage{model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
+          "expr": "sum by (query_source) (increase(claude_code_cost_usage{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
           "instant": true,
           "legendFormat": "{{query_source}}",
           "range": false,
@@ -460,7 +479,7 @@
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "editorMode": "code",
-          "expr": "sum(increase(claude_code_session_count[1d]))",
+          "expr": "sum(increase(claude_code_session_count{project=~\"$project\"}[1d]))",
           "format": "time_series",
           "interval": "1d",
           "legendFormat": "sessions",
@@ -509,7 +528,7 @@
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "editorMode": "code",
-          "expr": "sum by (model, query_source) (increase(claude_code_cost_usage{model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
+          "expr": "sum by (model, query_source) (increase(claude_code_cost_usage{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
           "format": "table",
           "instant": true,
           "legendFormat": "__auto",
@@ -525,6 +544,133 @@
             "excludeByName": { "Time": true },
             "indexByName": {},
             "renameByName": { "Value": "Cost", "model": "Model", "query_source": "Source" }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 32 },
+      "id": 103,
+      "panels": [],
+      "title": "By project",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "description": "Cost per project. The `project` label is not emitted by Claude Code — it comes from OTEL_RESOURCE_ATTRIBUTES, set by claude-env.sh. Sessions recorded before tagging show up under an empty project.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "gradientMode": "none",
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": { "type": "linear" },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": { "group": "A", "mode": "normal" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "mappings": [],
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 33 },
+      "id": 11,
+      "options": {
+        "legend": { "calcs": ["sum"], "displayMode": "table", "placement": "right", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "editorMode": "code",
+          "expr": "sum by (project) (increase(claude_code_cost_usage{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__rate_interval]))",
+          "legendFormat": "{{project}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Cost over time by project",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "mappings": [] },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Cost" },
+            "properties": [{ "id": "unit", "value": "currencyUSD" }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Tokens" },
+            "properties": [{ "id": "unit", "value": "short" }]
+          }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 33 },
+      "id": 12,
+      "options": {
+        "cellHeight": "sm",
+        "footer": { "countRows": false, "fields": "", "reducer": ["sum"], "show": true },
+        "showHeader": true,
+        "sortBy": [{ "displayName": "Cost", "desc": true }]
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "editorMode": "code",
+          "expr": "sum by (project) (increase(claude_code_token_usage{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "editorMode": "code",
+          "expr": "sum by (project) (increase(claude_code_cost_usage{project=~\"$project\", model=~\"$model\", query_source=~\"$query_source\"}[$__range]))",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "B"
+        }
+      ],
+      "title": "Tokens & cost by project",
+      "transformations": [
+        {
+          "id": "joinByField",
+          "options": { "byField": "project", "mode": "outer" }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": { "Time 1": true, "Time 2": true },
+            "indexByName": {},
+            "renameByName": {
+              "Value #A": "Tokens",
+              "Value #B": "Cost",
+              "project": "Project"
+            }
           }
         }
       ],
