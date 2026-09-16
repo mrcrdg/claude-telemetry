@@ -1,3 +1,5 @@
+metric sugestion: session lenght (idk how to measure it) by context issues results in Output quality improved (focused context) and less "let me re-explain the project" time
+
 # Reading the metrics: what to aim for
 
 What each number means, what a healthy value looks like, and what to actually

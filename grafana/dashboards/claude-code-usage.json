@@ -134,6 +134,33 @@
         "sort": 1,
         "type": "query",
         "allValue": ".*"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "definition": "query_result(claude_session_info)",
+        "includeAll": true,
+        "label": "Session (chat title)",
+        "multi": true,
+        "name": "session",
+        "options": [],
+        "query": {
+          "qryType": 3,
+          "query": "claude_session_info",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "/session_id=\"(?<value>[^\"]+)\".*title=\"(?<text>[^\"]+)\"/",
+        "sort": 1,
+        "type": "query",
+        "allValue": ".*"
       }
     ]
   },
@@ -143,7 +170,7 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Claude Code \u2014 Token Usage",
+  "title": "Claude Code — Token Usage",
   "uid": "claude-code-usage",
   "version": 12,
   "weekStart": "",
@@ -166,7 +193,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Total tokens of every type whose session was active in the selected range. Uses max_over_time rather than increase() so sessions that finished before the window still count \u2014 increase() reports 0 for those.",
+      "description": "Total tokens of every type whose session was active in the selected range. Uses max_over_time rather than increase() so sessions that finished before the window still count — increase() reports 0 for those.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -223,7 +250,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "API-equivalent cost. On a subscription this is NOT your bill \u2014 it is what the same work would cost on pay-as-you-go, useful for comparing projects and sessions, not for predicting a charge.",
+      "description": "API-equivalent cost. On a subscription this is NOT your bill — it is what the same work would cost on pay-as-you-go, useful for comparing projects and sessions, not for predicting a charge.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -337,7 +364,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Active coding time \u2014 LIVE SESSIONS ONLY. Transcripts carry no timing data, so sessions recovered by the backfill script contribute nothing here. Reads 0 if no telemetry-enabled session ran in the window.",
+      "description": "Active coding time — LIVE SESSIONS ONLY. Transcripts carry no timing data, so sessions recovered by the backfill script contribute nothing here. Reads 0 if no telemetry-enabled session ran in the window.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -399,7 +426,7 @@
       },
       "id": 104,
       "panels": [],
-      "title": "Efficiency scorecard  \u00b7  where the money goes",
+      "title": "Efficiency scorecard  ·  where the money goes",
       "type": "row"
     },
     {
@@ -407,7 +434,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "cacheRead / cacheCreation \u2014 how many times you reused what you paid to cache. THE headline efficiency number. Red below 2x is arithmetic: cache writes cost 2x input at the 1h TTL Claude Code uses, so below ~2.1 reuses caching costs more than sending fresh. The yellow/green bands are YOUR baseline, not an industry norm \u2014 fitted to the percentiles of your own sessions, so they move as you work. Re-fit them with scripts/recalibrate-thresholds.py. Raise it with `claude --continue` instead of a fresh session.",
+      "description": "cacheRead / cacheCreation — how many times you reused what you paid to cache. THE headline efficiency number. Red below 2x is arithmetic: cache writes cost 2x input at the 1h TTL Claude Code uses, so below ~2.1 reuses caching costs more than sending fresh. The yellow/green bands are YOUR baseline, not an industry norm — fitted to the percentiles of your own sessions, so they move as you work. Re-fit them with scripts/recalibrate-thresholds.py. Raise it with `claude --continue` instead of a fresh session.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -485,7 +512,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Share of spend going to WRITING the cache. Cache writes cost 2x input (1h TTL), reads 0.1x \u2014 a 20x spread \u2014 so writes dominate the bill even at a small share of tokens. Do NOT try to drive this to zero: writes are the cost of admission, and no writes means no cheap reads. Under ~30% is healthy; over 50% means sessions are dying before they amortize.",
+      "description": "Share of spend going to WRITING the cache. Cache writes cost 2x input (1h TTL), reads 0.1x — a 20x spread — so writes dominate the bill even at a small share of tokens. Do NOT try to drive this to zero: writes are the cost of admission, and no writes means no cheap reads. Under ~30% is healthy; over 50% means sessions are dying before they amortize.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -559,7 +586,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "output / cacheRead. Output is the priciest lane at 5x input (50x a cache read), and extended thinking is billed as output. The yellow band sits at your own p75, so it moves as you work \u2014 re-fit with scripts/recalibrate-thresholds.py. Above it means generation-heavy work \u2014 justified for writing code, less so for reading. Lower it with reduced effort and targeted edits over whole-file rewrites.",
+      "description": "output / cacheRead. Output is the priciest lane at 5x input (50x a cache read), and extended thinking is billed as output. The yellow band sits at your own p75, so it moves as you work — re-fit with scripts/recalibrate-thresholds.py. Above it means generation-heavy work — justified for writing code, less so for reading. Lower it with reduced effort and targeted edits over whole-file rewrites.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -633,7 +660,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "input / all tokens. Fresh tokens the cache did NOT cover. Should be a rounding error \u2014 under 1% means caching is doing its job. Above ~5% something is defeating the prefix cache (context rebuilt in a different shape each turn, or constant model switching).",
+      "description": "input / all tokens. Fresh tokens the cache did NOT cover. Should be a rounding error — under 1% means caching is doing its job. Above ~5% something is defeating the prefix cache (context rebuilt in a different shape each turn, or constant model switching).",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -707,7 +734,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Total cost / distinct sessions. Read it TOGETHER with the session count next to it: if sessions fell and this rose, that's good \u2014 you consolidated work into fewer, longer sessions. It's only a bad signal when total cost rises with it.",
+      "description": "Total cost / distinct sessions. Read it TOGETHER with the session count next to it: if sessions fell and this rose, that's good — you consolidated work into fewer, longer sessions. It's only a bad signal when total cost rises with it.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -839,7 +866,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "What your tokens are made of. Compare against the cost pie to its right \u2014 the two look nothing alike, and the cost one is the one that matters. cacheRead dominates tokens because it's the cheap lane.",
+      "description": "What your tokens are made of. Compare against the cost pie to its right — the two look nothing alike, and the cost one is the one that matters. cacheRead dominates tokens because it's the cheap lane.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -905,7 +932,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "The same four types, priced. This is where your money actually goes. Typically cacheRead shrinks dramatically vs the token pie (it's 0.1x) while cacheCreation (1.25x) and output (5x) balloon. If these two pies looked the same, price wouldn't matter \u2014 they never do.",
+      "description": "The same four types, priced. This is where your money actually goes. Typically cacheRead shrinks dramatically vs the token pie (it's 0.1x) while cacheCreation (1.25x) and output (5x) balloon. If these two pies looked the same, price wouldn't matter — they never do.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -972,7 +999,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Where the money actually goes, priced per token type. The built-in claude_code_cost_usage metric has no `type` label, so this uses the claude_code_token_cost_usd recording rule (see prometheus/rules/claude-cost.yml). Token share and cost share differ wildly \u2014 cacheRead is usually most of the tokens and a minority of the cost.",
+      "description": "Where the money actually goes, priced per token type. The built-in claude_code_cost_usage metric has no `type` label, so this uses the claude_code_token_cost_usd recording rule (see prometheus/rules/claude-cost.yml). Token share and cost share differ wildly — cacheRead is usually most of the tokens and a minority of the cost.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1272,6 +1299,80 @@
         }
       ],
       "type": "table"
+    },
+    {
+      "id": 112,
+      "type": "table",
+      "title": "Session directory  ·  which UUID is which chat",
+      "description": "Maps each session_id to its Claude Code chat title (read from transcripts by the session-labeler sidecar). Use the 'Session (chat title)' filter at the top to jump to yours.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 33
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "claude_session_info{session_id=~\"$session\"}",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "A",
+          "legendFormat": "__auto"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Value": true,
+              "__name__": true,
+              "job": true,
+              "instance": true
+            },
+            "indexByName": {
+              "title": 0,
+              "started": 1,
+              "project": 2,
+              "session_id": 3
+            },
+            "renameByName": {
+              "title": "Chat",
+              "started": "Started",
+              "project": "Project",
+              "session_id": "Session id"
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "filterable": true
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "Started",
+            "desc": true
+          }
+        ]
+      }
     },
     {
       "collapsed": false,
@@ -1756,7 +1857,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Cost per project. The `project` label is not emitted by Claude Code \u2014 it comes from OTEL_RESOURCE_ATTRIBUTES, set by claude-env.sh. Sessions recorded before tagging show up under an empty project.",
+      "description": "Cost per project. The `project` label is not emitted by Claude Code — it comes from OTEL_RESOURCE_ATTRIBUTES, set by claude-env.sh. Sessions recorded before tagging show up under an empty project.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1962,7 +2063,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "cacheRead / (input + cacheRead) \u2014 the definition SigNoz uses, included so you can compare against other teams. Their guidance: warn below 60%, or on a drop of more than 15 points week-over-week; reported team values range from under 15% to over 60%. Expect this to sit near 100% for Claude Code, because uncached `input` is almost always negligible \u2014 which means it is good for benchmarking but saturated as a day-to-day signal. Use Cache amortization for that instead.",
+      "description": "cacheRead / (input + cacheRead) — the definition SigNoz uses, included so you can compare against other teams. Their guidance: warn below 60%, or on a drop of more than 15 points week-over-week; reported team values range from under 15% to over 60%. Expect this to sit near 100% for Claude Code, because uncached `input` is almost always negligible — which means it is good for benchmarking but saturated as a day-to-day signal. Use Cache amortization for that instead.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2049,7 +2150,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Tokens consumed in a rolling 5-hour window \u2014 the same window Claude's session limit resets on. This is NOT your quota percentage: Claude Code exports no quota, limit or plan-tier data, so the actual figure exists only in `/usage`. What this shows is the SHAPE of your consumption against that window, so a spike tells you you're burning the window faster than usual even though it can't say how much is left. Check /usage for the authoritative number.",
+      "description": "Tokens consumed in a rolling 5-hour window — the same window Claude's session limit resets on. This is NOT your quota percentage: Claude Code exports no quota, limit or plan-tier data, so the actual figure exists only in `/usage`. What this shows is the SHAPE of your consumption against that window, so a spike tells you you're burning the window faster than usual even though it can't say how much is left. Check /usage for the authoritative number.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2136,7 +2237,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Tokens consumed in a rolling 5-hour window \u2014 the same window Claude's session limit resets on. This is NOT your quota percentage: Claude Code exports no quota, limit or plan-tier data, so the actual figure exists only in `/usage`. What this shows is the SHAPE of your consumption against that window, so a spike tells you you're burning the window faster than usual even though it can't say how much is left. Check /usage for the authoritative number.",
+      "description": "Tokens consumed in a rolling 5-hour window — the same window Claude's session limit resets on. This is NOT your quota percentage: Claude Code exports no quota, limit or plan-tier data, so the actual figure exists only in `/usage`. What this shows is the SHAPE of your consumption against that window, so a spike tells you you're burning the window faster than usual even though it can't say how much is left. Check /usage for the authoritative number.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2215,7 +2316,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Share of suggested edits you kept. The strongest quality signal available from metrics alone: a falling rate means the edits are landing wide of what you wanted. SigNoz suggests warning above 30% rejection, i.e. below 70% here. Covers EDIT tools only \u2014 Edit, Write and NotebookEdit. Read, Bash and Grep are not represented; those need the events pipeline. Shows 'No data' until an edit is accepted or rejected in a telemetry-enabled session.",
+      "description": "Share of suggested edits you kept. The strongest quality signal available from metrics alone: a falling rate means the edits are landing wide of what you wanted. SigNoz suggests warning above 30% rejection, i.e. below 70% here. Covers EDIT tools only — Edit, Write and NotebookEdit. Read, Bash and Grep are not represented; those need the events pipeline. Shows 'No data' until an edit is accepted or rejected in a telemetry-enabled session.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2292,7 +2393,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Accepted vs rejected, by the edit tool used. Covers EDIT tools only \u2014 Edit, Write and NotebookEdit. Read, Bash and Grep are not represented; those need the events pipeline. Shows 'No data' until an edit is accepted or rejected in a telemetry-enabled session.",
+      "description": "Accepted vs rejected, by the edit tool used. Covers EDIT tools only — Edit, Write and NotebookEdit. Read, Bash and Grep are not represented; those need the events pipeline. Shows 'No data' until an edit is accepted or rejected in a telemetry-enabled session.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2346,7 +2447,7 @@
           "instant": true,
           "range": false,
           "refId": "A",
-          "legendFormat": "{{tool_name}} \u00b7 {{decision}}",
+          "legendFormat": "{{tool_name}} · {{decision}}",
           "expr": "sum by (tool_name, decision) (max_over_time(claude_code_code_edit_tool_decision{project=~\"$project\"}[$__range]))"
         }
       ],
@@ -2358,7 +2459,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Which languages the edits land in, and whether they stick. A language with a poor accept rate is worth a closer prompt. Covers EDIT tools only \u2014 Edit, Write and NotebookEdit. Read, Bash and Grep are not represented; those need the events pipeline. Shows 'No data' until an edit is accepted or rejected in a telemetry-enabled session.",
+      "description": "Which languages the edits land in, and whether they stick. A language with a poor accept rate is worth a closer prompt. Covers EDIT tools only — Edit, Write and NotebookEdit. Read, Bash and Grep are not represented; those need the events pipeline. Shows 'No data' until an edit is accepted or rejected in a telemetry-enabled session.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2443,7 +2544,7 @@
         "type": "loki",
         "uid": "loki"
       },
-      "description": "How long Claude takes per API call. p95 is what a slow turn feels like. There is no metric for this \u2014 duration_ms exists only on the api_request event. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill \u2014 transcripts carry no timing data.",
+      "description": "How long Claude takes per API call. p95 is what a slow turn feels like. There is no metric for this — duration_ms exists only on the api_request event. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill — transcripts carry no timing data.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2496,7 +2597,7 @@
         "type": "loki",
         "uid": "loki"
       },
-      "description": "Which tools cost you wall-clock time. The lever for 'work gets easier' rather than 'work gets cheaper' \u2014 slow tools waste minutes, not tokens. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill \u2014 transcripts carry no timing data.",
+      "description": "Which tools cost you wall-clock time. The lever for 'work gets easier' rather than 'work gets cheaper' — slow tools waste minutes, not tokens. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill — transcripts carry no timing data.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2549,7 +2650,7 @@
         "type": "loki",
         "uid": "loki"
       },
-      "description": "Call counts for EVERY tool \u2014 Read, Bash, Grep included. The code_edit_tool_decision metric only covers Edit/Write/NotebookEdit; this is the complete picture. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill \u2014 transcripts carry no timing data.",
+      "description": "Call counts for EVERY tool — Read, Bash, Grep included. The code_edit_tool_decision metric only covers Edit/Write/NotebookEdit; this is the complete picture. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill — transcripts carry no timing data.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2602,7 +2703,7 @@
         "type": "loki",
         "uid": "loki"
       },
-      "description": "Share of tool executions that failed. A tool failing repeatedly means wasted turns \u2014 each retry costs a full context re-read. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill \u2014 transcripts carry no timing data.",
+      "description": "Share of tool executions that failed. A tool failing repeatedly means wasted turns — each retry costs a full context re-read. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill — transcripts carry no timing data.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2655,7 +2756,7 @@
         "type": "loki",
         "uid": "loki"
       },
-      "description": "Failed API calls with status code. Retries are invisible in the metrics but show up here, and each one costs a full request. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill \u2014 transcripts carry no timing data.",
+      "description": "Failed API calls with status code. Retries are invisible in the metrics but show up here, and each one costs a full request. From Claude Code EVENTS via Loki, not Prometheus metrics. Only sessions run with OTEL_LOGS_EXPORTER=otlp appear here, and there is no backfill — transcripts carry no timing data.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2721,7 +2822,7 @@
         "type": "loki",
         "uid": "loki"
       },
-      "description": "Prompts per session \u2014 interaction depth. A session with many prompts is one where you kept working in the same context; lots of 1-prompt sessions means fragmentation, which is what drives cache-write cost. From events, so live sessions only.",
+      "description": "Prompts per session — interaction depth. A session with many prompts is one where you kept working in the same context; lots of 1-prompt sessions means fragmentation, which is what drives cache-write cost. From events, so live sessions only.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2784,7 +2885,7 @@
         "type": "loki",
         "uid": "loki"
       },
-      "description": "Share of API calls that did not error. Retries are invisible in the metrics but each one costs a full request \u2014 a dip here means tokens spent on work that had to be redone. From events, so live sessions only.",
+      "description": "Share of API calls that did not error. Retries are invisible in the metrics but each one costs a full request — a dip here means tokens spent on work that had to be redone. From events, so live sessions only.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2858,7 +2959,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Where Claude Code is being run from \u2014 terminal emulator, VS Code, tmux. Counts only sessions that carry a terminal_type label, i.e. live telemetry; sessions recovered from transcripts have no environment recorded and are excluded. Useful mainly to confirm a new environment is reporting.",
+      "description": "Where Claude Code is being run from — terminal emulator, VS Code, tmux. Counts only sessions that carry a terminal_type label, i.e. live telemetry; sessions recovered from transcripts have no environment recorded and are excluded. Useful mainly to confirm a new environment is reporting.",
       "fieldConfig": {
         "defaults": {
           "color": {

@@ -20,6 +20,21 @@ services:
       - "127.0.0.1:8889:8889"   # Prometheus scrape endpoint (exposed metrics)
     restart: unless-stopped
 
+  # Reads Claude Code transcripts and exposes claude_session_info{session_id,
+  # title,started,project} so the dashboard can label opaque session UUIDs with
+  # each chat's human title. Transcripts are mounted read-only.
+  session-labeler:
+    build: ./session-labeler
+    container_name: claude-session-labeler
+    volumes:
+      - ${CLAUDE_PROJECTS_DIR:-$HOME/.claude/projects}:/data/projects:ro
+    environment:
+      - CLAUDE_PROJECTS_DIR=/data/projects
+      - LABELER_REFRESH_SECONDS=60
+    ports:
+      - "127.0.0.1:9105:9105"   # Prometheus scrape endpoint
+    restart: unless-stopped
+
   prometheus:
     image: prom/prometheus:v3.1.0
     container_name: claude-prometheus

@@ -21,3 +21,10 @@ scrape_configs:
     metric_relabel_configs:
       - regex: "user_email|user_id|user_account_id|user_account_uuid|organization_id"
         action: labeldrop
+
+  # Sidecar that maps session_id -> chat title, read from Claude Code
+  # transcripts. Only exposes the claude_session_info gauge; the dashboard
+  # joins it onto the token series so panels show titles instead of UUIDs.
+  - job_name: claude-session-labeler
+    static_configs:
+      - targets: ["session-labeler:9105"]

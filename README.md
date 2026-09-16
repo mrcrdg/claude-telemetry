@@ -23,6 +23,7 @@ Claude Code ──OTLP gRPC :4317──▶ OTel Collector ──:8889──▶ P
 | OTel Collector | 8889             | Prometheus scrape endpoint                  |
 | Prometheus     | 9090             | Stores metrics (90-day retention)           |
 | Loki           | 3100             | Stores events (latency, tool results, errors) |
+| Session labeler | 9105            | Maps `session_id` → chat title (from transcripts) |
 | Grafana        | 3000             | Dashboards (admin / admin)                  |
 
 ## Quick start
@@ -243,6 +244,13 @@ curl -s http://localhost:8889/metrics | grep claude_code
   these at scrape time via a `labeldrop` rule in `prometheus/prometheus.yml`, so
   they're never stored. `session_id` is kept (needed to keep each session's
   counters distinct). Nothing leaves your machine regardless.
+- **Finding your own session:** the dashboard's `Session (chat title)` filter and
+  the *Session directory* table map each opaque `session_id` UUID to its chat
+  title. Titles are read from Claude Code transcripts under `~/.claude/projects`
+  by the session-labeler sidecar and exposed as the `claude_session_info` gauge.
+  Titles/first-prompts become metric labels — visible to anyone with dashboard
+  access, which is why (like everything here) the port is localhost-only. Point
+  the sidecar elsewhere with `CLAUDE_PROJECTS_DIR`.
 - Grafana uses `admin/admin` — fine for a local-only tool; change it if you
   expose the port.
 - The dashboard JSON is provisioned from `grafana/dashboards/` and checked into
